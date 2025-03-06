@@ -1,6 +1,6 @@
 # In-vivo evidence for increased tau deposition in temporal lobe epilepsy  
 
-[![GitHub stars](https://img.shields.io/github/stars/MICA-MNI/in-vivo_tauPET-mk6240_TLE.svg?style=flat&label=⭐%EF%B8%8F%20stars&color=brightgreen)](https://github.com/MICA-MNI/in-vivo_tauPET-mk6240_TLE/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/MICA-MNI/in-vivo_tauPET-mk6240_TLE.svg?style=flat&label=%E2%AD%90%EF%B8%8F%20stars&color=brightgreen)](https://github.com/MICA-MNI/in-vivo_tauPET-mk6240_TLE/stargazers)
 [![License: MIT](https://img.shields.io/github/license/MICA-MNI/in-vivo_tauPET-mk6240_TLE)](https://mit-license.org)
 
 **Cite:** 
