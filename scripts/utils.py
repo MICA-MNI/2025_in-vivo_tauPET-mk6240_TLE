@@ -5,23 +5,31 @@ import os
 import requests
 import tempfile
 import glob
+import numpy as np
 import nibabel as nib
 import pandas as pd
+import seaborn as sns
+import networkx as nx
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
+from matplotlib.cm import ScalarMappable
 from matplotlib.colors import TwoSlopeNorm
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 from sklearn.linear_model import LinearRegression
 from scipy.interpolate import griddata
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, pearsonr
+from statsmodels.nonparametric.smoothers_lowess import lowess
+
 from brainspace.plotting import plot_hemispheres
 from brainspace.mesh.mesh_io import read_surface
+from brainspace.null_models import SpinPermutations
+
 from brainstat.stats.terms import MixedEffect, FixedEffect
 from brainstat.stats.SLM import SLM
-from statsmodels.nonparametric.smoothers_lowess import lowess
-from brainspace.null_models import SpinPermutations
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-import numpy as np
-import seaborn as sns
+
 import cmocean
 cmaps = cmocean.cm.cmap_d
 
