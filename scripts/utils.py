@@ -293,7 +293,7 @@ def plot_connectome(mtx, Title='matrix plot', xlab='X', ylab='Y', col='rocket', 
     pass
 
 def plot_ridgeplot(matrix, matrix_df=None, Cmap='rocket', Range=(0.5, 2), Xlab="SUVR value", save_path=None, 
-                  title=None, Vline=None, VlineCol='red'):
+                  title=None, Vline=None, VlineCol='darkred'):
     """
     Parameters:
     - matrix: numpy array
