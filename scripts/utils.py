@@ -29,6 +29,7 @@ from brainspace.null_models import SpinPermutations
 
 from brainstat.stats.terms import MixedEffect, FixedEffect
 from brainstat.stats.SLM import SLM
+from brainstat.datasets import fetch_mask, fetch_template_surface
 
 import cmocean
 cmaps = cmocean.cm.cmap_d
@@ -487,7 +488,7 @@ def load_data(regex, surf='fslr32k'):
 # -----------------------------------------------------------------------------
 # Function to generate the surface models of mk6240 vs Clinical and behavioral variables
 
-def slm_surf(df, Y, feat='age.mk6240', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, color_range=(-3, 3)):
+def slm_surf(df, Y, feat='age.mk6240', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, color_range=(-3, 3), nan_color=(0, 0, 0, 1)):
     """
     Run SLM analysis on the given feature with specified contrast direction and cluster threshold.
     
@@ -502,10 +503,10 @@ def slm_surf(df, Y, feat='age.mk6240', neg_tail=False, cthr=0.05, alpha=0.3, sca
     np.array: Processed surface data after applying statistical thresholds.
     """
     
-    # Load fsLR-32k surface and mask
-    from brainstat.datasets import fetch_mask, fetch_template_surface
+    # Load fsLR-32k surface
+    surf_lh = fetch_surface('fsLR-32k.L.surf.gii')
+    surf_rh = fetch_surface('fsLR-32k.R.surf.gii')
     fslr32k = fetch_template_surface("fslr32k", join=True)
-    surf_lh, surf_rh = fetch_template_surface("fslr32k", join=False)
 
     # fsLR-32k middle wall mask
     fslr32k_mask = fetch_mask("fslr32k")
@@ -555,7 +556,7 @@ def slm_surf(df, Y, feat='age.mk6240', neg_tail=False, cthr=0.05, alpha=0.3, sca
     # Plot the results on brain hemispheres
     f = plot_hemispheres(
         surf_lh, surf_rh, array_name=surf_data, size=(900, 250), color_bar='bottom', 
-        zoom=1.25, embed_nb=True, interactive=False, share='both', nan_color=(0, 0, 0, 1), 
+        zoom=1.25, embed_nb=True, interactive=False, share='both', nan_color=nan_color, 
         cmap=cmap, transparent_bg=True, label_text=[feat], color_range=color_range, 
         screenshot=False, scale=scale
     )
