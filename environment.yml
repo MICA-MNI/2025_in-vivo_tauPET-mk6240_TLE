@@ -4,20 +4,19 @@ channels:
   - defaults
 dependencies:
   - python=3.12
-  - numpy=1.26.4
-  - pandas=2.2.2
-  - matplotlib=3.8.4
-  - seaborn=0.13.2
-  - cmocean=4.0.3
-  - scikit-learn=1.5.1
-  - nibabel=5.2.1
-  - vtk==9.3.1
+  - numpy>=1.11.0
+  - pandas
+  - matplotlib>=2.0.0
+  - seaborn
+  - cmocean
+  - vtk>=9.1.0,<9.3.2
   - pip
   - pip:
-    - brainspace==0.1.10
+    - brainspace==0.1.20
     - brainstat==0.4.2
-    - nibabel==5.2.1
-    - nilearn==0.10.4
-    - scikit-learn==1.5.1
-    - scipy==1.12.0
+    - jupyter
+    - nibabel
+    - nilearn
+    - scikit-learn>=0.22.0
+    - scipy>=0.17.0
 prefix: /opt/anaconda3/envs/mk6240_2024
