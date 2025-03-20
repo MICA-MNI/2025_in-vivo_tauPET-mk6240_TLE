@@ -879,7 +879,7 @@ def plot_network_spintest(Xval, Yval, sp, fslr5k_mask, Xnames=['X1', 'X2']):
     feats = {Xnames[1]: Xval[1], Xnames[0]: Xval[0]}
     rotated = {Xnames[1]: Xval2_rotated, Xnames[0]: Xval1_rotated}
 
-    r_spin = np.empty(n_rand)
+    r_spin = np.empty(sp.n_rep)
 
     for k, (fn, feat) in enumerate(feats.items()):
         r_obs, pv_obs = spearmanr(feat[fslr5k_mask], Yval[fslr5k_mask])

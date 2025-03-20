@@ -11,7 +11,7 @@
 # 1. Supplementary figures
 # 
 
-# In[ ]:
+# In[1]:
 
 
 # Libraries
@@ -40,7 +40,7 @@ from utils import *
 
 # ### Load data
 
-# In[ ]:
+# In[2]:
 
 
 osf_path='/home/bic/rcruces/Desktop'
@@ -64,7 +64,7 @@ fslr32k_mask = fetch_mask("fslr32k")
 
 # ### Sort the matrices into ipsilateral/contralateral relative to seizure focus
 
-# In[ ]:
+# In[3]:
 
 
 # fsLR-32k length
@@ -85,7 +85,7 @@ thickness = np.concatenate((th_ipsi, th_contra), axis=1)
 # ## Participants
 # 
 
-# In[ ]:
+# In[4]:
 
 
 # Create a cross-tabulation of 'group' and 'mk6240.session'
@@ -99,7 +99,7 @@ display(cross_tab)
 # ## **Figure 1:** Mapping of tau uptake in TLE
 # ### A | Mean Tau 18F-MK6240 uptake by group
 
-# In[ ]:
+# In[5]:
 
 
 # plot data
@@ -108,7 +108,7 @@ plot_ctx_groups(fslr32k_lh, fslr32k_rh, tauMK6240, df , color_range=(0.5, 2), Sa
 
 # ### B.1 | Tau 18F-MK6240 uptake group difference
 
-# In[ ]:
+# In[6]:
 
 
 # CREATE the mixed effects model p> 0.01 (p>0.005 per tail) 
@@ -118,7 +118,7 @@ slm = mem_groups(Data=tauMK6240, df=df, Surf=fslr32k, mask=fslr32k_mask, Cthr=0.
 plot_ctx_slm(fslr32k_lh, fslr32k_rh, slm, color_range=(-3,3), Str='t-values', Save=False, Col="RdBu_r", mask=fslr32k_mask, scale=1 )
 
 
-# In[ ]:
+# In[7]:
 
 
 # p>0.025 Plot P-values
@@ -127,7 +127,7 @@ plot_ctx_pval(fslr32k_lh, fslr32k_rh, slm, Str='p-values', Save=False, Col="infe
 
 # ### B.2 | Mean SUVR values for significant regions in each hemisphere by group
 
-# In[ ]:
+# In[8]:
 
 
 # significant values
@@ -151,7 +151,7 @@ df['mk6240.sig.contra'] = np.mean(mk_contra[:, pvalues_bin_contra == 1], axis=1)
 #df.to_csv(f'{osf_path}/18F-MK6240_database.csv', sep=',', encoding='utf-8', index=False, header=True)
 
 
-# In[ ]:
+# In[9]:
 
 
 # Define the features and titles
@@ -203,7 +203,7 @@ plt.show()
 # ### C.1 | Subject-Wise Distribution of Cortical MK6240 Uptake
 # ### C.1.a | Ridgeplot of TLE subjects
 
-# In[ ]:
+# In[10]:
 
 
 # Slice for the 'Patient' group
@@ -220,7 +220,7 @@ plot_ridgeplot(tauMK6240_tle_masked,
 
 # ### C.1.b | Ridgeplot of Healthy controls
 
-# In[ ]:
+# In[11]:
 
 
 # Filter mk_matched for the 'Healthy' group
@@ -239,7 +239,7 @@ plot_ridgeplot(tauMK6240_control_masked,
 # 
 # ### C.2.a | TLE subjects
 
-# In[ ]:
+# In[12]:
 
 
 # Low 18F-mk6240
@@ -267,7 +267,7 @@ plot_hemispheres(fslr32k_lh, fslr32k_rh, array_name=individual_tle, size=(900, 1
 
 # ### C.2.b | Healthy controls
 
-# In[ ]:
+# In[13]:
 
 
 # Subset of subjects HC
@@ -291,7 +291,7 @@ plot_hemispheres(fslr32k_lh, fslr32k_rh, array_name=individual_hc, size=(900, 10
 # ----------------
 # ## **Figure 2:** Network contextualization
 
-# In[ ]:
+# In[14]:
 
 
 # Load Functional connectome (FC)
@@ -330,7 +330,7 @@ mk6240_tval_map_5k = metric_resample(mk6240_tval_map)
 
 # ### Tau MK6240 Group Differences (tvalues)
 
-# In[ ]:
+# In[15]:
 
 
 plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, fc_5k_mean, node_val=mk6240_tval_map_5k, 
@@ -339,7 +339,7 @@ plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, fc_5k_mean, node_val=mk624
 
 # ### A | Relationship Between Tau MK6240 Group Differences and *Mean Group Connectome*
 
-# In[ ]:
+# In[16]:
 
 
 plot_network_correlation(Xval = [fc_5k_Colmean[fslr5k_mask], scw_5k_Colmean[fslr5k_mask]],
@@ -353,13 +353,13 @@ plot_network_correlation(Xval = [fc_5k_Colmean[fslr5k_mask], scw_5k_Colmean[fslr
 # 
 # > Vos de Wael, R., Benkarim, O., Paquola, C., Lariviere, S., Royer, J., Tavakol, S., ... & Bernhardt, B. C. (2020). BrainSpace: a toolbox for the analysis of macroscale gradients in neuroimaging and connectomics datasets. Commun Biol 3, 103.
 
-# In[ ]:
+# In[17]:
 
 
 get_ipython().run_cell_magic('time', '', "from brainspace.null_models import SpinPermutations\n\n# Load spheres fsLR5k\nsphere_lh = fetch_surface('fsLR-5k.L.sphere.surf.gii')\nsphere_rh = fetch_surface('fsLR-5k.R.sphere.surf.gii')\n\n# Set the number of rotations\nn_rand = 10000\n\nsp = SpinPermutations(n_rep=n_rand, random_state=0)\nsp.fit(sphere_lh, points_rh=sphere_rh)")
 
 
-# In[ ]:
+# In[18]:
 
 
 get_ipython().run_cell_magic('time', '', "plot_network_spintest([fc_5k_Colmean, scw_5k_Colmean], \n                      mk6240_tval_map_5k, sp, fslr5k_mask, Xnames=['mean_fc', 'mean_sc'])")
@@ -367,7 +367,7 @@ get_ipython().run_cell_magic('time', '', "plot_network_spintest([fc_5k_Colmean, 
 
 # ### Mean functional connectome as adjacency matrix
 
-# In[ ]:
+# In[19]:
 
 
 # Slice the FC of the patients to remove the midwall
@@ -385,7 +385,7 @@ plot_connectome(fc_5k_NO_midwall, col='bone_r', xlab='', ylab='', Title='Functio
 
 # ### Mean functional connectome as network
 
-# In[ ]:
+# In[20]:
 
 
 plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, fc_5k_mean, node_val=fc_5k_Colmean, 
@@ -394,7 +394,7 @@ plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, fc_5k_mean, node_val=fc_5k
 
 # ### Mean structural connectome as adjacency matrix
 
-# In[ ]:
+# In[21]:
 
 
 # Slice the SC of the patients to remove the midwall
@@ -415,7 +415,7 @@ plot_connectome(scw_5k_NO_midwall_log, col='bone_r', xlab='', ylab='', Title='St
 
 # ### Mean structural connectome as network
 
-# In[ ]:
+# In[22]:
 
 
 plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, scw_5k_mean, node_val=scw_5k_Colmean, 
@@ -430,7 +430,7 @@ plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, scw_5k_mean, node_val=scw_
 # 
 # > Shafiei, Golia, et al. "Spatial patterning of tissue volume loss in schizophrenia reflects brain network architecture." Biological psychiatry 87.8 (2020): 727-735.
 
-# In[ ]:
+# In[23]:
 
 
 # Calculate the neighborhood_estimates
@@ -439,7 +439,7 @@ _, neig_fc = neighborhood_estimates(mk6240_tval_map_5k[fslr5k_mask], fc_5k_NO_mi
 _,neig_sc = neighborhood_estimates(mk6240_tval_map_5k[fslr5k_mask], scw_5k_NO_midwall, method='spearman')
 
 
-# In[ ]:
+# In[24]:
 
 
 plot_network_correlation(Xval = [neig_fc, neig_sc],
@@ -449,7 +449,7 @@ plot_network_correlation(Xval = [neig_fc, neig_sc],
 
 # ### Spin permutation to assess significance
 
-# In[ ]:
+# In[25]:
 
 
 get_ipython().run_cell_magic('time', '', "plot_network_spintest([fc_5k_Colmean, scw_5k_Colmean], \n                      mk6240_tval_map_5k, sp, fslr5k_mask, Xnames=['neighbors_FC', 'neighbors_SC'])")
@@ -457,7 +457,7 @@ get_ipython().run_cell_magic('time', '', "plot_network_spintest([fc_5k_Colmean, 
 
 # ### Tau MK6240 weighted by the *Functional Connectome* neighbours
 
-# In[ ]:
+# In[26]:
 
 
 neig_fc_5k = map_to_labels5k(neig_fc, fslr5k_mask)
@@ -468,7 +468,7 @@ plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, fc_5k_mean, node_val=neig_
 
 # ### Tau MK6240 weighted by the *Structural connectome* neighbours
 
-# In[ ]:
+# In[27]:
 
 
 neig_sc_5k = map_to_labels5k(neig_sc, fslr5k_mask)
@@ -484,7 +484,7 @@ plot_brain_network(fslr5k_lh, fslr5k_rh, fslr5k_mask, scw_5k_mean, node_val=neig
 
 # ### Effect of age
 
-# In[ ]:
+# In[28]:
 
 
 slm_surf(df, tauMK6240, feat='age.mk6240', neg_tail=False, cthr=0.05, scale=1)
@@ -492,7 +492,7 @@ slm_surf(df, tauMK6240, feat='age.mk6240', neg_tail=False, cthr=0.05, scale=1)
 
 # ### Effect of duration
 
-# In[ ]:
+# In[29]:
 
 
 # Slice only Patients
@@ -505,7 +505,7 @@ slm_surf(df[idx], tauMK6240[idx,:], feat='duration', neg_tail=False, cthr=0.05, 
 
 # ### Epitrack score
 
-# In[ ]:
+# In[30]:
 
 
 slm_surf(df, feat='EpiTrack.Total.Score', Y=tauMK6240, neg_tail=True, cthr=0.05, scale=1)
@@ -513,7 +513,7 @@ slm_surf(df, feat='EpiTrack.Total.Score', Y=tauMK6240, neg_tail=True, cthr=0.05,
 
 # ### Episodic memory
 
-# In[ ]:
+# In[31]:
 
 
 slm_surf(df, feat='Epi.Acc.D.per', Y=tauMK6240, neg_tail=True, cthr=0.05, scale=1)
@@ -521,7 +521,7 @@ slm_surf(df, feat='Epi.Acc.D.per', Y=tauMK6240, neg_tail=True, cthr=0.05, scale=
 
 # ### Semantic memory
 
-# In[ ]:
+# In[32]:
 
 
 slm_surf(df, feat='task.semantic', Y=tauMK6240, neg_tail=True, cthr=0.05, alpha=0.5, scale=1)
@@ -532,7 +532,7 @@ slm_surf(df, feat='task.semantic', Y=tauMK6240, neg_tail=True, cthr=0.05, alpha=
 
 # ## Cortical map of abnormal MK6240 SUVR probability
 
-# In[ ]:
+# In[33]:
 
 
 # Create a new matrix with values higher than 1.5 set to 1, rest set to 0
@@ -545,7 +545,7 @@ plot_ctx_groups(fslr32k_lh, fslr32k_rh, tauMK6240_bin, df , color_range=(-0.75,0
 
 # ## Group difference in cortical thickness
 
-# In[ ]:
+# In[34]:
 
 
 # p>0.025 CREATE the mixed effects model
@@ -556,16 +556,16 @@ plot_ctx_slm(fslr32k_lh, fslr32k_rh, slm_th, color_range=(-6,6), Str='t-values',
              mask=fslr32k_mask, scale=1 )
 
 
-# In[ ]:
+# In[35]:
 
 
 # p>0.025 Plot P-values
-plot_ctx_pval(fslr32k_lh, fslr32k_rh, slm_th, Str='p-values', Col="inferno", Thr=0.01, scale=1)
+plot_ctx_pval(fslr32k_lh, fslr32k_rh, slm_th, Str='p-values', Col="inferno_r", Thr=0.01, scale=1)
 
 
 # ## Group difference in MK6240 controlled by thickness
 
-# In[ ]:
+# In[36]:
 
 
 # -------------------------------
@@ -580,19 +580,13 @@ plot_ctx_slm(fslr32k_lh, fslr32k_rh, slm_mkth, color_range=(-3,3), Str='t-values
              mask=fslr32k_mask, scale=1)
 
 
-# In[ ]:
+# In[37]:
 
 
 # p>0.025 Plot P-values
-plot_ctx_pval(fslr32k_lh, fslr32k_rh, slm_mkth, Str='p-values', Col="inferno", Thr=0.01, scale=1)
+plot_ctx_pval(fslr32k_lh, fslr32k_rh, slm_mkth, Str='p-values', Col="inferno_r", Thr=0.01, scale=1)
 
 
 # ## Mean longitudinal MK6240 by subject per group
 # 
 # See `Rmarkdown` document
-
-# In[ ]:
-
-
-
-
