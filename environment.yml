@@ -10,6 +10,8 @@ dependencies:
   - seaborn
   - cmocean
   - vtk>=9.1.0,<9.3.2
+  - networkx
+  - statsmodels
   - pip
   - pip:
     - brainspace==0.1.20
