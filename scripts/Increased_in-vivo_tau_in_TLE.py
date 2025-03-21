@@ -55,7 +55,8 @@ pet_raw = np.load(f'{osf_path}/surf-fsLR-32k_desc-GroupData_smooth-10mm_pvc-prob
 cth_raw = np.load(f'{osf_path}/surf-fsLR-32k_desc-GroupData_smooth-20mm_thickness.npy')
 
 # Load fsLR-32 surface
-fslr32k_lh, fslr32k_rh = fetch_template_surface("fslr32k", join=False)
+fslr32k_lh = fetch_surface('fsLR-32k.L.surf.gii')
+fslr32k_rh = fetch_surface('fsLR-32k.R.surf.gii')
 fslr32k = fetch_template_surface("fslr32k", join=True)
 
 # Load fsLR-32k middle wall mask
