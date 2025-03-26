@@ -898,7 +898,7 @@ def plot_network_spintest(Xval, Yval, sp, fslr5k_mask, Xnames=['X1', 'X2']):
         if k == 0:
             axs[k].set_ylabel('Density')
 
-        print(f'{fn.capitalize()}:\n r: {r_obs:.5e}\n Obs : {pv_obs:.5e}\n Spin: {pv_spin:.5e}\n')
+        print(f'{fn.capitalize()}:\n r: {r_obs:.3f}\n Obs : {pv_obs:.5e}\n Spin: {pv_spin:.3f}\n')
 
     fig.tight_layout()
     plt.show()
