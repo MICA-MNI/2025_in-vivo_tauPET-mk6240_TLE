@@ -1,0 +1,435 @@
+---
+title: "In-vivo evidence for increased tau deposition in temporal lobe epilepsy"
+author: "Raúl R. Cruces"
+date: "2025-03-21"
+output:
+  md_document:
+    variant: gfm
+always_allow_html: yes
+---
+
+# *In-vivo* evidence for increased tau deposition in temporal lobe epilepsy
+
+### Table of Contents
+
+1.  [Directory file content](#directory-file-content)\
+2.  [Tau PET 18F-mk6240 features](#tau-pet-mk6240-features)
+3.  [Data processing](#data-processing)
+4.  [Data analysis](#data-analysis)
+
+### Directory file content {#directory-file-content}
+
+| File       | Description              |
+|------------|--------------------------|
+| [`Fig-1_Tau-pet_18F-mk6240_SupFig.ipynb`]    | PET-preprocessing script |
+| [`Fig-2_network_contextualization.ipynb`] | notebook                 |
+| [`Fig-3_clinical-cognitive_correlations.ipynb`] | notebook                 |
+| [`Increased_in-vivo_tau_in_TLE.py`] | A Python script with all the                  |
+| [`Increased_in-vivo_tau_in_TLE.Rmd`] | An R Markdown document includes statistical analysis and data visualization.                 |
+| [`utils.py`] | A Python utility script, containing all the helper functions for the analysis                 |
+
+# Tau PET \| 18F-mk6240 features {#tau-pet-mk6240-features}
+
+The PET images are transformed to `NIFTI` from the `ECAT (.v)` files with `v1.0.20240202 GCC11.2.0`. This transformation keeps the data in nano Curies.
+
+### Parameters {#parameters}
+
+**Dimensions**: 256 x 256 x 207\
+**Voxel size**: 1.21875 x 1.21875 x 1.21875\
+**psfmm** : scanner PSF FWHM in mm
+
+> psf FWHM is the full-width/half-max of the the point-spread function (PSF) of the scanner as measured in image space (also known as the burring function). The blurring function depends on the scanner and reconstruction method
+
+### Unit reference {#unit-reference}
+
+> cc=cm3=mL 1 nCi = 37 Bq\
+> Bq: Becquerels\
+> nCi: nano Curies
+
+### 3D non motion corrected data
+
+1.  `TX256.v` Linear atenuation map, 4D_MC is corregistered to this image. Later this is the image that is use to calculate the affine registration between PET and MRi space. \> This is a CT transmission scan
+2.  `EM_3D.v` 4 frames, 20 minutes of acquisition each one (Bq/cc).
+3.  `EM_3D_AVG.v` average of the four frames (Bq/cc).
+
+### 4D motion corrected data
+
+1.  `EM_4D_MC01.v` Filter Back Projection (FBP) image. It is the inversion of the radon transformation. 4 frames, 20 minutes of acquisition each one (nCi/cc).
+2.  `EM_4D_MC01_AVG.v` FBP average of 4 four frames (nCi/cc units).
+
+### Standardized uptake values
+
+In summary this gives the following equation to calculate SUV at time $t$ post injection:
+
+> ![SUV](https://latex.codecogs.com/svg.image?%7B\color%7BWhite%7D&space;SUV(t)&space;=&space;\frac&space;%7Bc_%7Bimg%7D(t)%7D&space;%7BID&space;/&space;BW%7D%7D)\
+> **Cimg**=PET image\
+> **ID**=Injected dose\
+> **BW**=body weight\
+> With the radioactivity measured from an image acquired at (or around) the time t, decay corrected to t=0 and expressed as volume concentration (e.g. MBq/mL), the injected dose ID at t=0 (e.g. in MBq), and the body weight BW (near the time of image acquisition) implicitly converted into the body volume assuming an average mass density of 1 g/mL.
+
+**SUVR (ratio)**: The injected activity, body weight, and mass density, which are all components of the SUV calculation, cancel each other out.
+
+> ![](https://latex.codecogs.com/svg.image?%7B\color%7BWhite%7D&space;%7B\mathit%7BSUVR%7D%7D&space;=&space;\frac&space;%7B\mathit%7BSUV_%7Btarget%7D%7D%7D&space;%7B\mathit%7BSUV_%7Breference%7D%7D%7D&space;=&space;\frac&space;%7B\mathit%7Bc_%7Bimg,target%7D%7D%7D&space;%7B\mathit%7Bc_%7Bimg,reference%7D%7D%7D%7D)
+
+# Analysis {#data-analysis}
+
+## Database description
+
+| Column name            | Description                                                 |
+|------------------------|------------------------------------------------|
+| `EpiTrack.Score.age.corrected` | Composite score of the EpiTrack battery.            |
+| `Epi.Acc.D.per`        | Accuracy in the delayed recall task.                        |
+| `task.semantic`        | Accuracy in the semantic task.                              |
+| `lateralization`       | Laterality of the seizure onset in TLE (R, L)               |
+| `mCi.net`              | Net injected dose of the radiotracer.                       |
+| `mri.Tdiff`            | Time difference between the MRI and the PET scan.           |
+| `group`                | Diagnostic group (Healthy, Patient).                        |
+| `mk6240.session`       | Session of the PET scan (1,2).                              |
+| `mk6240.sig.ipsi`      | Mean 18F-mk6240 SUVR in the ipsilateral significant areas   |
+| `mk6240.sig.contra`    | Mean 18F-mk6240 SUVR in the contralateral significant areas |
+
+### Setup the environment
+
+```{r setup, include=FALSE, warning=FALSE}
+
+# All chunks in the document will display their code
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+# Load libraries
+library("lubridate") # interval
+library("dplyr") # %>%
+library("gtsummary") # Tables reports
+library("kableExtra") # tables formatting 
+library("scales") # alpha
+library("ggplot2") # lollipop
+library("lme4") # mixed-effects models
+library("lmerTest") # mixed-effects models
+library("pander") # table format
+library("osfr")  # OSF interface
+library("gridExtra") # grid.arrange
+library("emmeans")  # For estimating marginal means
+
+```
+
+### Get the data from the OSF repository
+
+```{r data, echo=FALSE, message=FALSE, warning=FALSE}
+# create a temporary directory
+tmpdir= tempdir()
+
+# Download the csv database
+osf_file <- osf_retrieve_node("ct3gw") %>%
+  osf_ls_files %>%
+  filter(name == "18F-MK6240_in-vivo_database.csv") %>%
+  osf_download(path = tmpdir,conflicts = "overwritte")
+
+# Load the csv database
+mk.df <- read.csv(osf_file$local_path)
+
+# Remove the tom variables
+rm(osf_file, tmpdir)
+```
+
+## Participants
+
+```{r table1, echo=FALSE, message=FALSE, warning=FALSE}
+# Mean and Std
+mk.df %>%
+  dplyr::select(group, handedness, age, sex, mk6240.session, mCi.net, mk6240.Tdiff, EpiTrack.Score.age.corrected, Epi.Acc.D.per, task.semantic, hip.ipsi, hip.cntr) %>%
+  tbl_summary(by = group, missing = "no",
+              statistic = list(all_continuous() ~ "{mean}±{sd}"),
+              type = list(mCi.net ~ "continuous", age~"continuous"),
+              digits = list(age~1)) %>%
+  modify_header(label = "**Demographics**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  # adding the header will also unhide the column
+  modify_header(statistic ~ "**Statistic**") %>%
+    as_kable_extra(
+      booktabs = TRUE,
+      longtable = TRUE,
+      linesep = ""
+    ) %>%
+    kableExtra::kable_styling(
+      position = "left",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15"
+    )
+```
+
+## 18F-MK6240 SUVR
+
+```{r table2, echo=FALSE, message=FALSE, warning=FALSE}
+# Mean and Std
+mk.df %>%
+  dplyr::select(group, mk6240.mean,  mk6240.mean.ipsi, mk6240.mean.contra, mk6240.sig, mk6240.sig.ipsi,  mk6240.sig.contra) %>%
+  tbl_summary(by = group, missing = "no",
+              statistic = list(all_continuous() ~ "{mean}±{sd}"),
+              type = list(mk6240.mean ~ "continuous", mk6240.mean.ipsi~"continuous")) %>%
+  modify_header(label = "**18F-MK6240 SUVR**") %>% 
+  # add a header to the statistic column, which is hidden by default
+  add_p(test = all_continuous() ~ "t.test") %>%
+  # adding the header will also unhide the column
+  modify_header(statistic ~ "**Statistic**") %>%
+    as_kable_extra(
+      booktabs = TRUE,
+      longtable = TRUE,
+      linesep = ""
+    ) %>%
+    kableExtra::kable_styling(
+      position = "left",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15"
+    )
+```
+
+```{r table3, echo=FALSE, message=FALSE, warning=FALSE}
+# Mean and Std
+mk.df %>%
+  subset(group=="Patient") %>% 
+  dplyr::select(group, duration, lateralization, origin) %>%
+  tbl_summary(by=group, missing = "no",
+              statistic = list(all_continuous() ~ "{mean}±{sd}"),
+              type = list(duration ~ "continuous"),
+              digits = list(duration~1)) %>%
+  modify_header(label = "**Patients**") %>% 
+    as_kable_extra(
+      booktabs = TRUE,
+      longtable = TRUE,
+      linesep = ""
+    ) %>%
+    kableExtra::kable_styling(
+      position = "left",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15"
+    )
+```
+
+## Figure1.B \| Group Differences in MK-6240 Uptake.
+
+Violin plots display the mean SUVR values for significant regions in each hemisphere by group, with significant differences assessed using a two-tailed Wilcoxon rank-sum test.
+
+```{r figure1b.ipsi, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
+# Function to produce summary statistics (mean and +/- sd)
+# > Saved as SVG 450 x 400 px
+data_summary <- function(x) {
+  m <- mean(x)
+  ymin <- m-sd(x)
+  ymax <- m+sd(x)
+  return(c(y=m,ymin=ymin,ymax=ymax))
+}
+
+# Reorder levels
+mk.df$group <- factor(mk.df$group, levels = c("Patient", "Healthy"))
+
+# Ipsilateral values per type
+g.ipsi <- ggplot(mk.df, aes(x=group, y=mk6240.sig.ipsi, color=group)) + 
+  geom_violin() + 
+  geom_jitter(shape=16, position=position_jitter(0.1)) + 
+  stat_summary(fun.data=data_summary) + 
+  coord_cartesian(ylim = c(0.8, 1.8)) +
+  ggtitle("Ipsilateral") +
+  scale_color_manual(values=c("#ff5555", "#666666")) +
+  labs(y = "Mean significant SUVR") +
+  theme(plot.title = element_text(hjust = 0.5),
+    legend.position = "none")
+
+# Contralateral values per type
+g.contra <- ggplot(mk.df, aes(x=group, y=mk6240.sig.contra, color=group)) + 
+  geom_violin() + 
+  geom_jitter(shape=16, position=position_jitter(0.1)) + 
+  stat_summary(fun.data=data_summary) + 
+  coord_cartesian(ylim = c(0.8, 1.8)) +
+  ggtitle("Contralateral") +
+  scale_color_manual(values=c("#ff5555", "#666666"))  +
+  labs(y = "Mean significant SUVR") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = c(0.8, 0.8),  # Adjust legend inside the plot
+    legend.background = element_rect(fill = "transparent", color = NA)  # Transparent legend box
+  )
+
+# Arrange plots in a grid
+grid.arrange(grobs = list(g.ipsi, g.contra), ncol = 2)
+
+```
+
+## Figure.3A \| Tau MK-6240 SUVR and clinical relationships
+
+Scatter plot display of the relationship of mean MK-6240 SUVR with behavioral and clinical measures. Duration and age are measured in *years*, while all the behavioral measurements where z-scores based in the control group.
+
+```{r figure3a, fig.width=6.5, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+# FUNCTION - Plot correlations using ggplot2
+plot_corr_ggplot <- function(mk620, value, Col=NULL, Xlab="Z-score", Ylab="mean SUVR",
+                             ln.col="gray65", ci.col="lightgray", Ylim=c(0.75,1.5), sub=NULL, Title=NULL) {
+  # Calculate correlation
+  cmod <- cor.test(value, mk620, method = "pearson")
+  rval <- round(cmod$estimate, 2)
+  rsig <- round(cmod$p.value, 2)
+  
+  # Create data frame for ggplot
+  df <- data.frame(value = value, mk620 = mk620, Col = Col)
+  
+  # Create ggplot
+  p <- ggplot(df, aes(x = value, y = mk620)) +
+    geom_point(aes(color = Col), size = 3) +
+    geom_smooth(method = "lm", se = TRUE, color = ln.col, fill = ci.col) +
+    labs(title = paste(Title, "\n", "r=", rval, ", pval=", rsig),
+         x = Xlab, y = Ylab) +
+    ylim(Ylim) +
+    scale_color_manual(values = c("#ff5555", "#666666")) +
+    theme_minimal() +
+    theme(legend.position = "none",
+          plot.title = element_text(hjust = 0.5))
+  
+  return(p)
+}
+
+
+# Subset of cross-sectional subjects
+mk.ses1 <- mk.df[mk.df$mk6240.session == 1, ]
+
+# Clinical correlations with mean pet deposits
+tle <- which(mk.ses1$group == "Patient")
+
+# Colors as Longitudinal subjects
+ind <- as.character(mk.ses1$participant_id) %in% mk.ses1$participant_id[duplicated(mk.ses1$participant_id)]
+
+# Color vector
+col.group <- c("#666666", "#ff5555")[mk.ses1$group]
+
+# Variables to correlate
+corr.cli <- c("age", "duration")
+
+# List to store plots
+plot_list <- list()
+
+# Set the variable to correlate with clinical
+for (i in seq_along(corr.cli)) {
+  var_name <- corr.cli[i]
+  for (j in c("mk6240.mean")) {
+    mk.val <- mk.ses1[, j]
+    
+    # Plot data
+    x <- mk.ses1[, var_name]
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "years", Ylab = "Mean SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.5))
+    plot_list <- c(plot_list, list(p))
+  }
+}
+
+# Arrange plots in a grid
+grid.arrange(grobs = plot_list, ncol = 2)
+
+```
+
+## Figure.3B \| Tau MK-6240 SUVR and behavioural relationships
+
+# Correlation with behavior 1000 x 945 px
+
+```{r figure3b, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Variables to correlate
+corr.cli <- c("EpiTrack.Score.age.corrected", "Epi.Acc.D.per", "task.semantic")
+
+# List to store plots
+plot_list <- list()
+
+# Set the variable to correlate with clinical
+for (i in seq_along(corr.cli)) {
+  var_name <- corr.cli[i]
+  for (j in c("mk6240.sig")) {
+    mk.val <- mk.ses1[, j]
+    
+    # Plot data
+    x <- mk.ses1[, var_name]
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "z-score", Ylab = "Mean significant SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
+    plot_list <- c(plot_list, list(p))
+  }
+}
+
+# Arrange plots in a grid
+grid.arrange(grobs = plot_list, ncol = 3)
+
+```
+
+## Supplementary Figure.4 \| Mean longitudinal *18F-MK6240*
+
+Differential trajectories of $[F^18]MK-6240$ uptake by group between the PET scan session 1 and 2 in the significant areas. The lines correspond to the longitudinal subjects.
+
+```{r Supfigure4, fig.width=10, fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+plot_long <- function(cmk.df, col_name="mk6240.sig", cols=c("#ff5555", "#666666"), Title="") {
+  # Colors as Longitudinal subjects
+  
+  # Get the index of subjects with mk6240.session 2
+  ind <- as.character(cmk.df$participant_id) %in% cmk.df$participant_id[duplicated(cmk.df$participant_id)]
+  
+  # Create a cvector of color by type
+  sub.uni <- cols[as.factor(cmk.df$group)]
+  tle.uni <- ifelse(ind==TRUE, sub.uni, alpha(sub.uni,0.4))
+  
+  x <- jitter(cmk.df$mk6240.session, factor = 0.5)
+  plot(x, cmk.df[,col_name], pch=20, bty='n', cex=3, col=tle.uni, xlab = "Session", 
+      ylab = "mk6240 - mean SUVR", xaxt = "n", ylim = c(0.8,1.8), main=Title)
+  # Y-axis
+  axis(1, at = c(1, 2))
+  
+  
+  df.long <- as.data.frame(cmk.df)
+  df.long$x.jt <- x
+  df.long$col <- cols[as.factor(cmk.df$group)]
+  
+  for (k in unique(df.long$participant_id)) {
+      xx <- df.long[df.long$participant_id==k, "x.jt"]
+      yy <- df.long[df.long$participant_id==k, col_name]
+      if (length(yy)==2){
+        lines(xx, yy, col=df.long$col[df.long$participant_id==k])
+      }
+    }
+}
+
+# Set the layout 1 row 2 columns
+par(mfrow=c(1,2))
+
+
+# Plot Patients
+plot_long(mk.df, col_name = "mk6240.sig", cols=c("#ff5555", NA), Title="Patients")
+
+# Plot Healthy controls
+plot_long(mk.df, col_name = "mk6240.sig", cols=c(NA, "#666666"), Title="Healthy controls")
+
+```
+
+```{r lme, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Make group a factor
+mk.df$group <- as.factor(mk.df$group)
+
+# Change months to years
+mk.df$mk6240.Tdiff.yrs <- mk.df$mk6240.Tdiff/12
+
+# Fit the mixed-effects model
+mem <- lmer(mk6240.sig ~ mk6240.Tdiff.yrs * group + (1 | participant_id), data = mk.df)
+
+# Summarize the model to view the fixed effects
+summary(mem)
+
+# Calculate the estimated marginal means for the slopes (change per year)
+emtrends_result <- emtrends(mem, pairwise ~ group, var = "mk6240.Tdiff.yrs")
+
+# View the estimated slopes by group
+print(emtrends_result$emtrends)
+```
+
+No significant interaction (`mk6240.Tdiff.yrs:groupHealthy`, p = 0.525) was found, suggesting that the rate of change in `mk6240.sig` over time is not significantly different between the Healthy and Patient groups.
+
+-   **Healthy Group**: The estimated slope is `-0.0088` per year (95% CI: -0.0425 to 0.0249). This suggests a slight decrease in `mk6240.sig` over time, but the change is small and not statistically significant (p = 0.704).
+
+-   **Patient Group**: The estimated slope is `0.0078` per year (95% CI: -0.0347 to 0.0502), indicating a slight increase in `mk6240.sig` over time, though this change is also not statistically significant.
+
+There is no strong evidence that `mk6240.sig` changes over time in either the Healthy or Patient groups, nor that the rate of change differs significantly between them. However, the significant main effect of group (p < 0.001) suggests that `mk6240.sig` is, on average, lower in the Healthy group compared to Patients.
+
+
+```{r, include=FALSE}
+   # add this chunk to end of mycode.rmd
+   file.rename(from="Increased_in-vivo_tau_in_TLE.md", 
+               to="README.md")
+```
