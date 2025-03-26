@@ -10,6 +10,8 @@
 
 **Preprint:** avaliable at [TBD]().   
 
+**Data repository:** avaliable at [OSF](https://osf.io/ct3gw/wiki/home/).  
+
 **Keywords:** Temporal lobe epilepsy | 18F-MK-6240 | tauopathy | neuroimaging | neuroinflammation
  
 **Short title:** *In-vivo findings of increased tau uptake in TLE*
@@ -27,9 +29,9 @@ This repository contains the code and data processing pipelines to replicate the
 - **18 TLE patients** (7 with longitudinal follow-up)  
 - **20 healthy controls** (10 with longitudinal follow-up)  
 
-### Imaging Data  
-- **3T MRI**: T1-weighted structural scans  
-- **PET**: 18F-MK6240 tracer data  
+### Imaging Data Acquisition  
+- **MRI**: 3T Siemens Magnetom Prisma-Fit scanner  
+- **PET**: Siemens high-resolution research tomograph (HRRT)  
 
 ## Processing Steps  
 1. **Preprocessing**: Registration of PET to MRI, partial volume correction, and SUVR computation (normalized to cerebellar grey matter).  
@@ -38,10 +40,10 @@ This repository contains the code and data processing pipelines to replicate the
 4. **Cognitive and Clinical Correlations**: Investigating relationships between tau deposition, disease duration, and cognitive performance.  
 
  ## Repository content
- | Directories   | Description                                                                                                                                                                                                                                                                             |
-|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`./scripts`](https://github.com/MICA-MNI/in-vivo_tauPET-mk6240_TLE/tree/master/scripts)      | `bash`, `python` and `R` functions for processing, and perform the analysis to reproduce the findings.                                                                                                                                                                                               |
-| [`./data`](https://github.com/MICA-MNI/in-vivo_tauPET-mk6240_TLE/tree/master/data) | Data necessary to run the code.                                                                                                                                                                                                                                         |
+| Directories   | Description                |
+|---------------|----------------------------|
+| [`./scripts`](https://github.com/MICA-MNI/in-vivo_tauPET-mk6240_TLE/tree/master/scripts)     | Notebooks for processing, and perform the analysis to reproduce the findings.   |
+| [`OSF ct3gw`](https://osf.io/ct3gw/wiki/home/) | This repository contains all the hosted data.  |
 
 ## Abstract
 
