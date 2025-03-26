@@ -21,4 +21,5 @@ dependencies:
     - nilearn
     - scikit-learn>=0.22.0
     - scipy>=0.17.0
+    - osfclient
 prefix: /opt/anaconda3/envs/mk6240_2024
