@@ -2,23 +2,22 @@
 
 ### Table of Contents
 
-1.  [Directory file content](#directory-file-content)  
-2.  [Tau PET 18F-mk6240 features](#tau-pet-mk6240-features)
-3.  [Data processing](#data-processing)
-4.  [Data analysis](#data-analysis)
+1.  [Directory file content](#directory-file-content)
+2.  [Tau PET 18F-mk6240 features](#tau-pet--18f-mk6240-features)
+3.  [Data analysis](#data-analysis)
 
 ### Directory file content
 
-| File                                              | Description                                                                   |
-|---------------------------------------------------|-------------------------------------------------------------------------------|
-| \[`Fig-1_Tau-pet_18F-mk6240_SupFig.ipynb`\]       | PET-preprocessing script                                                      |
-| \[`Fig-2_network_contextualization.ipynb`\]       | notebook                                                                      |
-| \[`Fig-3_clinical-cognitive_correlations.ipynb`\] | notebook                                                                      |
-| \[`Increased_in-vivo_tau_in_TLE.py`\]             | A Python script with all the                                                  |
-| \[`Increased_in-vivo_tau_in_TLE.Rmd`\]            | An R Markdown document includes statistical analysis and data visualization.  |
-| \[`utils.py`\]                                    | A Python utility script, containing all the helper functions for the analysis |
+| File                                                                                                                                                                      | Description                                                                   |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [`Fig-1_Tau-pet_18F-mk6240_SupFig.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Fig-1_Tau-pet_18F-mk6240_SupFig.ipynb)             | PET-preprocessing script                                                      |
+| [`Fig-2_network_contextualization.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Fig-2_network_contextualization.ipynb)             | notebook                                                                      |
+| [`Fig-3_clinical-cognitive_correlations.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Fig-3_clinical-cognitive_correlations.ipynb) | notebook                                                                      |
+| [`Increased_in-vivo_tau_in_TLE.py`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Increased_in-vivo_tau_in_TLE.py)                         | A Python script with all the                                                  |
+| [`Increased_in-vivo_tau_in_TLE.Rmd`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Increased_in-vivo_tau_in_TLE.Rmd)                       | An R Markdown document includes statistical analysis and data visualization.  |
+| [`utils.py`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/utils.py)                                                                       | A Python utility script, containing all the helper functions for the analysis |
 
-# Tau PET \| 18F-mk6240 features
+## Tau PET \| 18F-mk6240 features
 
 The PET images are transformed to `NIFTI` from the `ECAT (.v)` files
 with `v1.0.20240202 GCC11.2.0`. This transformation keeps the data in
@@ -78,7 +77,7 @@ which are all components of the SUV calculation, cancel each other out.
 
 > ![](https://latex.codecogs.com/svg.image?%7B\color%7BWhite%7D&space;%7B\mathit%7BSUVR%7D%7D&space;=&space;\frac&space;%7B\mathit%7BSUV_%7Btarget%7D%7D%7D&space;%7B\mathit%7BSUV_%7Breference%7D%7D%7D&space;=&space;\frac&space;%7B\mathit%7Bc_%7Bimg,target%7D%7D%7D&space;%7B\mathit%7Bc_%7Bimg,reference%7D%7D%7D%7D)
 
-# Analysis
+# Data analysis
 
 ## Database description
 
