@@ -17,6 +17,7 @@ from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import TwoSlopeNorm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from osfclient import OSF
 
 from sklearn.linear_model import LinearRegression
 from scipy.interpolate import griddata
@@ -164,7 +165,7 @@ def mem_groups(Data, df, Surf, Pcorr=["fdr", "rft"], Cthr=0.025, mask=None, mem=
     # -----------------------------------------------------------------------------
     # terms
     term_grp = FixedEffect(df['group'])
-    term_age = FixedEffect(df['age.mk6240'])
+    term_age = FixedEffect(df['age'])
     term_sex = FixedEffect(df['sex'])
     term_subject = MixedEffect(df['participant_id'])
 
@@ -488,7 +489,7 @@ def load_data(regex, surf='fslr32k'):
 # -----------------------------------------------------------------------------
 # Function to generate the surface models of mk6240 vs Clinical and behavioral variables
 
-def slm_surf(df, Y, feat='age.mk6240', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, color_range=(-3, 3), nan_color=(0, 0, 0, 1)):
+def slm_surf(df, Y, feat='age', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, color_range=(-3, 3), nan_color=(0, 0, 0, 1)):
     """
     Run SLM analysis on the given feature with specified contrast direction and cluster threshold.
     
@@ -930,4 +931,44 @@ def neighborhood_estimates(nodal_measurements, connectivity_matrix, method='pear
     return correlation_neighbors, nodal_neighbors
 
  
+def osf_download(name: str, project_id: str) -> str:
+    """
+    Download a file from an OSF project to a temporary location and return the file path.
+    
+    Parameters:
+    - name (str): The name of the file to download.
+    - project_id (str): The OSF project ID.
+    
+    Returns:
+    - str: The path of the downloaded file.
+    """
+    # Initialize OSF client
+    osf = OSF()
 
+    # Retrieve the project
+    project = osf.project(project_id)
+
+    # Get the default storage (osfstorage)
+    storage = project.storage('osfstorage')
+
+    # List all files and filter by name
+    file_ = next((f for f in storage.files if f.name == name), None)
+
+    if file_:
+        print(f"Found file: {file_.name}")
+        
+        # Create a temporary directory
+        temp_dir = tempfile.mkdtemp()
+
+        # Define the local path to store the file
+        local_path = os.path.join(temp_dir, file_.name)
+
+        # Download the file to the temporary directory
+        with open(local_path, 'wb') as local_file:
+            file_.write_to(local_file)
+            print(f"Downloaded {file_.name} to {local_path}")
+
+        # Return the path of the downloaded file
+        return local_path
+    else:
+        raise FileNotFoundError(f"File '{name}' not found in the project.")
