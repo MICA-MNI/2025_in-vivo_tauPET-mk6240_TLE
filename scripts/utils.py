@@ -929,7 +929,6 @@ def neighborhood_estimates(nodal_measurements, connectivity_matrix, method='pear
         correlation_neighbors, _ = pearsonr(nodal_measurements, nodal_neighbors)
 
     return correlation_neighbors, nodal_neighbors
-
  
 def osf_download(name: str, project_id: str) -> str:
     """
@@ -972,3 +971,100 @@ def osf_download(name: str, project_id: str) -> str:
         return local_path
     else:
         raise FileNotFoundError(f"File '{name}' not found in the project.")
+
+def fetch_annot(atlas, surf='fsaverage5'):
+    '''
+      Fetches the annotation labels for a specific brain parcellation and generates a medial wall mask.
+
+      Parameters:
+      -----------
+      atlas : str
+        The name of the brain parcellation atlas to fetch (e.g., 'glasser-360', 'aparc-a2009s').
+      surf : str, optional
+        The surface space to use for the parcellation. Default is 'fsaverage5'.
+        Options:
+        - 'fsaverage5': Uses FreeSurfer's fsaverage5 surface space.
+        - 'fsLR-32k': Uses fsLR-32k surface space.
+
+      Returns:
+      --------
+      labels : numpy.ndarray
+        An array of labels corresponding to the parcellation, with medial wall regions set to 0.
+      mask : numpy.ndarray
+        A boolean mask indicating non-medial wall regions (True for valid regions, False for medial wall).
+      Ndim : int
+        The number of unique labels in the parcellation.
+
+      Notes:
+      ------
+      - The function downloads the required annotation files from a GitHub repository.
+      - For 'fsaverage5', it processes both left and right hemisphere annotation files.
+      - For 'fsLR-32k', it reads the labels from a CSV file.
+      - Medial wall regions are excluded from the mask.
+      - For the 'aparc-a2009s' atlas on 'fsaverage5', specific medial wall labels (lh=42, rh=117) are excluded.
+
+      Raises:
+      -------
+      Exception
+        If the annotation file cannot be downloaded or the request fails.
+
+      Example:
+      --------
+      labels, mask, Ndim = fetch_annot('glasser-360', surf='fsaverage5')
+    '''
+
+    # Construct the URL for the surface file on GitHub
+    url = f'https://github.com/MICA-MNI/micapipe/raw/refs/heads/master/parcellations'
+      
+    def download_atlas(url_to_file):
+      # Download the surface file from the URL
+      response = requests.get(url_to_file)
+
+      # Ensure the request was successful
+      if response.status_code != 200:
+        raise Exception(f"Failed to download the {atlas} atlas on {surf} (Status code: {response.status_code})\n{url_to_file}")
+
+      # Step 2: Save the downloaded file in a temporary directory
+      with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(response.content)
+        temp_file_name = temp_file.name  # Get the temporary file name
+      
+      return(temp_file_name)
+    
+    if surf == 'fsaverage5':
+        # Load LEFT annotation file in fsaverage5
+        tmp_file  = download_atlas(f'{url}/lh.{atlas}_mics.annot')
+        annot_lh_fs5= nib.freesurfer.read_annot(tmp_file)
+        os.remove(tmp_file)
+
+        # Unique number of labels of a given atlas
+        Ndim = max(np.unique(annot_lh_fs5[0]))
+
+        # Load RIGHT annotation file in fsaverage5
+        tmp_file  = download_atlas(f'{url}/rh.{atlas}_mics.annot')
+        print(tmp_file)
+        annot_rh_fs5 = nib.freesurfer.read_annot(tmp_file)[0]+Ndim
+        os.remove(tmp_file)
+
+        # replace with 0 the medial wall of the right labels
+        annot_rh_fs5 = np.where(annot_rh_fs5==Ndim, 0, annot_rh_fs5) 
+
+        # fsaverage5 labels
+        labels = np.concatenate((annot_lh_fs5[0], annot_rh_fs5), axis=0)
+    
+    else:
+        # Read label for fsLR-32k
+        tmp_file  = download_atlas(f'{url}/{atlas}_conte69.csv')
+        labels = np.loadtxt(open(tmp_file), dtype=int)
+        os.remove(tmp_file)
+
+    # mask of the medial wall
+    mask = labels != 0
+    
+    # Midwall labels of aparc-a2009s are lh=42 and rh=117
+    if atlas == 'aparc-a2009s' and surf == 'fsaverage5':
+        mask[(labels == 117) | (labels == 42)] = 0
+    
+    #print(f'{atlas}; midwall = {Ndim}, length = {str(labels.shape)}')
+    
+    return(labels, mask, Ndim)
