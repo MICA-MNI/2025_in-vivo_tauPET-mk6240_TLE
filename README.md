@@ -8,9 +8,9 @@
 
 **DOI:** [TBD]().  
 
-**Preprint:** avaliable at [TBD]().   
+**Preprint:** avaliable at [bioRxiv](https://doi.org/10.1101/2025.05.14.654095 ).   
 
-**Data repository:** avaliable at [OSF](https://osf.io/ct3gw/wiki/home/).  
+**Data repository:** avaliable at [OSF](https://osf.io/ct3gw).  
 
 **Keywords:** Temporal lobe epilepsy | 18F-MK-6240 | tauopathy | neuroimaging | neuroinflammation
  
