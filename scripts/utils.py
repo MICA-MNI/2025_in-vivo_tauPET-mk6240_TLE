@@ -22,6 +22,7 @@ from osfclient import OSF
 from sklearn.linear_model import LinearRegression
 from scipy.interpolate import griddata
 from scipy.stats import spearmanr, pearsonr
+from scipy.stats import ttest_ind
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from brainspace.plotting import plot_hemispheres
@@ -1068,3 +1069,79 @@ def fetch_annot(atlas, surf='fsaverage5'):
     #print(f'{atlas}; midwall = {Ndim}, length = {str(labels.shape)}')
     
     return(labels, mask, Ndim)
+
+def plot_mk6240_group_summary(slm, mk_matched, df, threshold=0.01, ylim=[0.7, 1.7]):
+    df = df.copy()  # avoid SettingWithCopyWarning
+
+    # Copy p-values and define hemispheric split
+    pvalues = np.copy(slm.P["pval"]["C"])
+    n_64k = mk_matched.shape[1]
+    n_32k = n_64k // 2
+
+    mk_ipsi = mk_matched[:, :n_32k]
+    mk_contra = mk_matched[:, n_32k:]
+
+    # Binarize significant vertices
+    pvalues_bin = (pvalues < threshold).astype(int)
+    pvalues_bin_ipsi = pvalues_bin[:n_32k]
+    pvalues_bin_contra = pvalues_bin[n_32k:]
+
+    # Compute mean SUVR for significant vertices (if any)
+    df["mk6240.sig.ipsi"] = (
+        mk_ipsi[:, pvalues_bin_ipsi == 1].mean(axis=1) 
+        if pvalues_bin_ipsi.any() else np.nan
+    )
+    df["mk6240.sig.contra"] = (
+        mk_contra[:, pvalues_bin_contra == 1].mean(axis=1) 
+        if pvalues_bin_contra.any() else np.nan
+    )
+    df["mk6240.mean.ipsi"] = mk_ipsi.mean(axis=1)
+    df["mk6240.mean.contra"] = mk_contra.mean(axis=1)
+
+    # Plotting
+    features = ["mk6240.sig.ipsi", "mk6240.sig.contra"]
+    titles = ["Ipsilateral", "Contralateral"]
+    palette = {"Patient": "#ff5555", "Healthy": "#666666"}
+
+    plt.figure(figsize=(8, 2.5))
+
+    for i, (feature, title) in enumerate(zip(features, titles), 1):
+        plt.subplot(1, 2, i)
+
+        sns.stripplot(
+            data=df,
+            x="group",
+            y=feature,
+            hue='group',
+            palette=palette,
+            alpha=0.5,
+            jitter=True,
+            dodge=False
+        )
+
+        # Mean + error bars
+        for x_pos, group in enumerate(["Healthy", "Patient"]):
+            group_data = df[df["group"] == group][feature]
+            mean_val = group_data.mean()
+            std_val = group_data.std()
+            plt.plot(x_pos, mean_val, "o", color="black")
+            plt.vlines(x=x_pos, ymin=mean_val - std_val, ymax=mean_val + std_val, color="black", linewidth=2)
+
+        plt.title(title, fontsize=13)
+        plt.xlabel("Group")
+        plt.ylabel("SUVR")
+        plt.ylim(ylim[0], ylim[1])
+        plt.xlim(-0.4, 1.4)
+        sns.despine()
+
+        # --- T-test between groups ---
+        healthy_vals = df[df["group"] == "Healthy"][feature].dropna()
+        patient_vals = df[df["group"] == "Patient"][feature].dropna()
+        if len(healthy_vals) > 1 and len(patient_vals) > 1:
+            t_stat, p_val = ttest_ind(patient_vals, healthy_vals,  equal_var=False)
+            print(f"{title} t-test: t={t_stat:.3f}, p={p_val:.4g}")
+        else:
+            print(f"{title} t-test: Not enough data")
+
+    plt.tight_layout()
+    plt.show()
