@@ -1,10 +1,10 @@
-name: mk6240_2024
+name: mk6240_2025
 channels:
   - conda-forge
   - defaults
 dependencies:
   - python=3.12
-  - numpy>=1.11.0
+  - numpy>=1.11.0,<2
   - pandas
   - matplotlib>=2.0.0
   - seaborn
@@ -12,14 +12,15 @@ dependencies:
   - vtk>=9.1.0,<9.3.2
   - networkx
   - statsmodels
+  - jupyter
   - pip
   - pip:
-    - brainspace==0.1.20
-    - brainstat==0.4.2
-    - jupyter
-    - nibabel
-    - nilearn
-    - scikit-learn>=0.22.0
-    - scipy>=0.17.0
-    - osfclient
-prefix: /opt/anaconda3/envs/mk6240_2024
+      - brainspace==0.1.20
+      - neurotools==0.2.5
+      - brainstat==0.4.2
+      - jupyter
+      - nibabel
+      - nilearn
+      - scikit-learn>=0.22.0
+      - scipy>=0.17.0
+      - osfclient
