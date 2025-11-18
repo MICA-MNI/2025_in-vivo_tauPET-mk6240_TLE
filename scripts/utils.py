@@ -732,8 +732,8 @@ def plot_brain_network(surf_lh, surf_rh, mask_5k, adj_matrix, node_val=None, nod
     A_R_NO_midwall = A_R_NO_midwall[:, mask_5k_R]
 
     # Create a weighted graph network object with networkx from the adjacency matrix
-    G_L = nx.from_numpy_matrix(A_L_NO_midwall)
-    G_R = nx.from_numpy_matrix(A_R_NO_midwall)
+    G_L = nx.from_numpy_array(A_L_NO_midwall)
+    G_R = nx.from_numpy_array(A_R_NO_midwall)
 
     # Get the coordinates of each node
     pos_R = {i: plot_coord_R[i] for i in range(len(plot_coord_R))}
