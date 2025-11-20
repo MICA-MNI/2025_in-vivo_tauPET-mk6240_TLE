@@ -1104,7 +1104,8 @@ def plot_mk6240_group_summary(slm, mk_matched, df, threshold=0.01, ylim=[0.7, 1.
     palette = {"Patient": "#ff5555", "Healthy": "#666666"}
 
     plt.figure(figsize=(8, 2.5))
-
+    
+    print("    T-test summary table\n----------------------------")
     for i, (feature, title) in enumerate(zip(features, titles), 1):
         plt.subplot(1, 2, i)
 
