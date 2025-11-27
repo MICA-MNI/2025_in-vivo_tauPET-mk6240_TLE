@@ -490,19 +490,57 @@ def load_data(regex, surf='fslr32k'):
 # -----------------------------------------------------------------------------
 # Function to generate the surface models of mk6240 vs Clinical and behavioral variables
 
-def slm_surf(df, Y, feat='age', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, color_range=(-3, 3), nan_color=(0, 0, 0, 1)):
+def slm_surf(df, Y, feat='age', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, color_range=(-3, 3), nan_color=(0, 0, 0, 1),
+             Save=False, png_file=''):
     """
-    Run SLM analysis on the given feature with specified contrast direction and cluster threshold.
+    Run SLM analysis on surface data to examine relationships between cortical features and clinical/behavioral variables.
+    
+    This function fits a mixed-effects model to surface data, identifying brain regions where the specified 
+    feature shows significant associations. The analysis includes statistical thresholding and visualization.
     
     Parameters:
-    df (DataFrame): The input data containing the feature and participant IDs.
-    feat (str): The feature column to analyze.
-    Y (np.array): Surface data to fit the model.
-    neg_tail (bool): If True, reverses the contrast.
-    cthr (float): Cluster threshold for statistical correction.
+    -----------
+    df : pandas.DataFrame
+        Input dataframe containing clinical/behavioral variables and participant identifiers.
+        Must include columns for 'feat' and 'participant_id'.
+    Y : numpy.ndarray
+        Surface data array with shape (n_subjects, n_vertices) to fit the model on.
+    feat : str, optional
+        Column name in df representing the feature to analyze (default: 'age').
+    neg_tail : bool, optional
+        If True, reverses the contrast direction for the analysis (default: False).
+    cthr : float, optional
+        Cluster-forming threshold for multiple comparison correction (default: 0.05).
+    alpha : float, optional
+        Transparency level for non-significant regions in visualization (default: 0.3).
+    scale : int, optional
+        Scaling factor for the output figure size (default: 2).
+    color_range : tuple, optional
+        Min and max values for the color scale (default: (-3, 3)).
+    nan_color : tuple, optional
+        RGBA color for NaN/masked regions (default: (0, 0, 0, 1)).
+    Save : bool, optional
+        Whether to save the output figure (default: False).
+    png_file : str, optional
+        Filepath for saving the figure if Save=True (default: '').
     
     Returns:
-    np.array: Processed surface data after applying statistical thresholds.
+    --------
+    matplotlib.figure.Figure
+        Brain surface visualization with statistical results overlaid.
+    
+    Notes:
+    ------
+    - Uses mixed-effects model: Y ~ feature + (1|participant_id)
+    - Applies RFT correction for multiple comparisons
+    - Removes NaN values from both df and Y before fitting
+    - Requires fsLR-32k surface templates
+    
+    Example:
+    --------
+    >>> fig = slm_surf(df, cortical_data, feat='disease_duration', 
+    ...                neg_tail=False, cthr=0.01, Save=True, 
+    ...                png_file='disease_duration_results.png')
     """
     
     # Load fsLR-32k surface
@@ -560,7 +598,7 @@ def slm_surf(df, Y, feat='age', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, c
         surf_lh, surf_rh, array_name=surf_data, size=(900, 250), color_bar='bottom', 
         zoom=1.25, embed_nb=True, interactive=False, share='both', nan_color=nan_color, 
         cmap=cmap, transparent_bg=True, label_text=[feat], color_range=color_range, 
-        screenshot=False, scale=scale
+        screenshot=Save, scale=scale, filename=png_file
     )
 
     return f
