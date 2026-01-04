@@ -644,7 +644,7 @@ Violin plots display the mean SUVR values for significant regions in
 each hemisphere by group, with significant differences assessed using a
 two-tailed Wilcoxon rank-sum test.
 
-![](figures/figure1b.ipsi-1.png)<!-- -->
+![](Increased_in-vivo_tau_in_TLE_files/figure-gfm/figure1b.ipsi-1.png)<!-- -->
 
 ## Figure.3A \| Tau MK-6240 SUVR and clinical relationships
 
@@ -653,13 +653,13 @@ behavioral and clinical measures. Duration and age are measured in
 *years*, while all the behavioral measurements where z-scores based in
 the control group.
 
-![](figures/figure3a-1.png)<!-- -->
+![](Increased_in-vivo_tau_in_TLE_files/figure-gfm/figure3a-1.png)<!-- -->
 
 ## Figure.3B \| Tau MK-6240 SUVR and behavioural relationships
 
 # Correlation with behavior 1000 x 945 px
 
-![](figures/figure3b-1.png)<!-- -->
+![](Increased_in-vivo_tau_in_TLE_files/figure-gfm/figure3b-1.png)<!-- -->
 
 ## Supplementary Figure.4 \| Mean longitudinal *18F-MK6240*
 
@@ -667,7 +667,7 @@ Differential trajectories of $[F^18]MK-6240$ uptake by group between the
 PET scan session 1 and 2 in the significant areas. The lines correspond
 to the longitudinal subjects.
 
-![](figures/Supfigure4-1.png)<!-- -->
+![](Increased_in-vivo_tau_in_TLE_files/figure-gfm/Supfigure4-1.png)<!-- -->
 
     ## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
     ## lmerModLmerTest]
