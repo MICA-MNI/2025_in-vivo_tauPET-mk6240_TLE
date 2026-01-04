@@ -218,7 +218,7 @@ def plot_ctx_slm(surf_lh, surf_rh, slm, color_range=(-4,4), Str='slm', Save=Fals
 
 # -----------------------------------------------------------------------------
 # Plot the results of the cortical SLM P-values
-def plot_ctx_pval(surf_lh, surf_rh, slm, Str='slm', Save=False, Col="inferno", Thr=0.05, png_file='', scale=2):
+def plot_ctx_pval(surf_lh, surf_rh, slm, Str='slm', Save=False, Col="inferno", Thr=0.025, png_file='', scale=2):
     '''
     Plots the results of cortical SLM
     MEM Y ~ Age + Sex + (1 | subject )
@@ -227,10 +227,10 @@ def plot_ctx_pval(surf_lh, surf_rh, slm, Str='slm', Save=False, Col="inferno", T
     sig_pvalues = np.copy(slm.P["pval"]["C"])
 
     # Apply thresholding and create a new array with 0s and 1s
-    plot_pvalues = np.where(sig_pvalues > Thr, 1, 0)
+    plot_pvalues = np.where(sig_pvalues > Thr, np.NaN, 1)
 
-    f = plot_hemispheres(surf_lh, surf_rh, array_name=plot_pvalues, size=(900, 250), color_bar='bottom', zoom=1.25, embed_nb=True, interactive=False, share='both',
-                             nan_color=(0, 0, 0, 1), cmap=Col, transparent_bg=True, label_text=[Str], color_range=(Thr, 1),
+    f = plot_hemispheres(surf_lh, surf_rh, array_name=plot_pvalues, size=(900, 250), color_bar=None, zoom=1.25, embed_nb=True, interactive=False, share='both',
+                             nan_color=(0, 0, 0, 1), cmap=Col, transparent_bg=True, label_text=[Str], color_range=(0, 1),
                              screenshot=Save, filename=png_file, scale=scale)
     return(f)
 
@@ -582,10 +582,15 @@ def slm_surf(df, Y, feat='age', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, c
     slm_feat.fit(Y_clean)
     
     # Get the cluster p-values from the analysis
-    sig_pvalues = np.copy(slm_feat.P["pval"]["C"])
+    sig_pvalues = slm_feat.P["pval"]["C"]
     
-    # Apply thresholding to create a binary mask of significant values
-    surf_pvalues = np.where(sig_pvalues > cthr, alpha, 1)
+    if sig_pvalues is None:
+        print("Warning: pval.C is None")
+        surf_pvalues = np.ones_like(slm_feat.t[0])
+    else:
+        sig_pvalues = np.copy(sig_pvalues)
+        # Apply thresholding to create a binary mask of significant values
+        surf_pvalues = np.where(sig_pvalues > cthr, alpha, 1)
     
     # Multiply the t-values by the mask and thresholded p-values
     surf_data = slm_feat.t[0] * fslr32k_mask * surf_pvalues
@@ -600,8 +605,8 @@ def slm_surf(df, Y, feat='age', neg_tail=False, cthr=0.05, alpha=0.3, scale=2, c
         cmap=cmap, transparent_bg=True, label_text=[feat], color_range=color_range, 
         screenshot=Save, scale=scale, filename=png_file
     )
-
-    return f
+    
+    return f,slm_feat
 
 def fetch_surface(surf_name='fsLR-5k.L.inflated.surf.gii', is_surf=True, nibabel=False):
 
