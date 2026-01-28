@@ -23,6 +23,7 @@ always_allow_html: yes
 | [`Fig-1_Tau-pet_18F-mk6240_SupFig.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Fig-1_Tau-pet_18F-mk6240_SupFig.ipynb)    | PET-preprocessing script |
 | [`Fig-2_network_contextualization.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Fig-2_network_contextualization.ipynb) | notebook                 |
 | [`Fig-3_clinical-cognitive_correlations.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Fig-3_clinical-cognitive_correlations.ipynb) | notebook                 |
+| [`Fig-sup_sex-analysis.ipynb`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Supplementary_sex-analysis.ipynb)  | notebook                 |
 | [`Increased_in-vivo_tau_in_TLE.py`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Increased_in-vivo_tau_in_TLE.py) | A Python script with all the                  |
 | [`Increased_in-vivo_tau_in_TLE.Rmd`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/Increased_in-vivo_tau_in_TLE.Rmd) | An R Markdown document includes statistical analysis and data visualization.                 |
 | [`utils.py`](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/scripts/utils.py) | A Python utility script, containing all the helper functions for the analysis                 |
@@ -74,18 +75,47 @@ In summary this gives the following equation to calculate SUV at time $t$ post i
 
 ## Database description
 
-| Column name            | Description                                                 |
-|------------------------|------------------------------------------------|
-| `EpiTrack.Score.age.corrected` | Composite score of the EpiTrack battery.            |
-| `Epi.Acc.D.per`        | Accuracy in the delayed recall task.                        |
-| `task.semantic`        | Accuracy in the semantic task.                              |
-| `lateralization`       | Laterality of the seizure onset in TLE (R, L)               |
-| `mCi.net`              | Net injected dose of the radiotracer.                       |
-| `mri.Tdiff`            | Time difference between the MRI and the PET scan.           |
-| `group`                | Diagnostic group (Healthy, Patient).                        |
-| `mk6240.session`       | Session of the PET scan (1,2).                              |
-| `mk6240.sig.ipsi`      | Mean 18F-mk6240 SUVR in the ipsilateral significant areas   |
-| `mk6240.sig.contra`    | Mean 18F-mk6240 SUVR in the contralateral significant areas |
+| Column name                     | Description                                                                 |
+|---------------------------------|-----------------------------------------------------------------------------|
+| `id`                            | Unique subject identifier <participant_id>_<mk6240.session>.                |
+| `participant_id`                | Alphanumerical subject label.                                               |
+| `mk6240.session`                | PET session index for 18F-MK6240 acquisition (1 or 2).                      |
+| `mk6240.Tdiff`                  | Time difference (months) between first and second MK6240 PET session        |
+| `mk6240.mri.Tdiff`              | Time difference (months) between MRI and first MK6240 PET session           |
+| `sex`                           | Biological sex of the participant (F/M).                                    |
+| `age`                           | Participant’s age at the time of PET scan.                                  |
+| `age.mri1`                      | Participant’s age at the time of the first MRI scan.                        |
+| `handedness`                    | Hand preference (Right, Left, Ambidextrous).                                |
+| `Language`                      | Primary language spoken by the participant.                                 |
+| `group`                         | Diagnostic group (Healthy, Patient).                                        |
+| `mCi.net`                       | Net injected dose of 18F-MK6240 radiotracer (in mCi).                       |
+| `mk6240.mean`                   | Whole-brain mean SUVR of 18F-MK6240.                                        |
+| `epilepsy.class`                | Epilepsy classification (clinical subtype).                                 |
+| `lateralization`                | Laterality of the seizure onset in TLE (R, L).                              |
+| `origin`                        | Epilepsy etiology (e.g., mTLE, TLE, unclear).                               |
+| `dre`                           | Drug-resistant epilepsy status (Yes/No).                                    |
+| `asm.number`                    | Number of anti-seizure medications taken.                                   |
+| `asm.names`                     | Names of anti-seizure medications taken.                                    |
+| `onset`                         | Age at epilepsy onset.                                                      |
+| `duration`                      | Duration of epilepsy (years).                                               |
+| `sx.number`                     | Number of surgeries (if any)                                                |
+| `engel`                         | Engel post-operative seizure freedom classification.                        |
+| `ilae.class`                    | ILAE surgical outcome classification.                                       |
+| `moca.Total.Score`              | Global cognitive score from the MoCA test.                                  |
+| `EpiTrack                    `  | Age-corrected composite score from the EpiTrack cognitive battery.          |
+| `Episodic`                      | Percent accuracy in delayed recall trials.                                  |
+| `Epi.Acc.E.per`                 | Percent accuracy in encoding trials.                                        |
+| `Semantic`                      | Accuracy in the semantic decision task.                                     |
+| `task.spatial`                  | Accuracy in the spatial memory task.                                        |
+| `hip.ipsi`                      | Ipsilateral hippocampal volume (mm³ volume).                                |
+| `IEDs`                          | Interictal epileptiform discharge frequency from EMU or LTMO.               |
+| `GTCSF`                         | generalized tonic-clonic seizures frequency per year.                       |
+| `mk6240.sig.ipsi`               | Mean 18F-MK6240 SUVR in ipsilateral significant cortical clusters.          |
+| `mk6240.sig.contra`             | Mean 18F-MK6240 SUVR in contralateral significant cortical clusters.        |
+| `suvr.ipsi.?`                   | Mean 18F-MK6240 SUVR in ipsilateral subcortical ROIs.                       |
+| `suvr.cntr.?`                   | Mean 18F-MK6240 SUVR in contralateral subcortical ROIs.                     |
+
+
 
 ### Setup the environment
 
@@ -94,7 +124,7 @@ In summary this gives the following equation to calculate SUV at time $t$ post i
 # All chunks in the document will display their code
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 # Load libraries
-library("lubridate") # interval
+library("lubridate") # intervals
 library("dplyr") # %>%
 library("gtsummary") # Tables reports
 library("kableExtra") # tables formatting 
@@ -106,86 +136,126 @@ library("pander") # table format
 library("osfr")  # OSF interface
 library("gridExtra") # grid.arrange
 library("emmeans")  # For estimating marginal means
+library("corrplot") # correlation plots
+library("RColorBrewer") # color palettes
+library("GGally")    # Correlogram
+library("lavaan") # SEM
+library("lavaanPlot") # SEM plot
+library("semPlot") #sempath plot
 
 ```
 
 ### Get the data from the OSF repository
 
 ```{r data, echo=FALSE, message=FALSE, warning=FALSE}
-# create a temporary directory
-tmpdir= tempdir()
+# # create a temporary directory
+# tmpdir= tempdir()
+# 
+# # Download the csv database
+# osf_file <- osf_retrieve_node("ct3gw") %>%
+#   osf_ls_files %>%
+#   filter(name == "18F-MK6240_in-vivo_database.csv") %>%
+#   osf_download(path = tmpdir,conflicts = "overwritte")
+# 
+# # Load the csv database
+# mk.df <- read.csv(osf_file$local_path)
+# 
+# # Remove the tom variables
+# rm(osf_file, tmpdir)
+mk.df <- read.csv("/Users/rcruces/Desktop/OSF_data_revision-2025/18F-MK6240_database.csv")
 
-# Download the csv database
-osf_file <- osf_retrieve_node("ct3gw") %>%
-  osf_ls_files %>%
-  filter(name == "18F-MK6240_in-vivo_database.csv") %>%
-  osf_download(path = tmpdir,conflicts = "overwritte")
+names(mk.df)[names(mk.df) == "EpiTrack.Score.age.corrected"] <- "EpiTrack"
+names(mk.df)[names(mk.df) == "Epi.Acc.D.per"] <- "Episodic"
+names(mk.df)[names(mk.df) == "task.semantic"] <- "Semantic"
+names(mk.df)[names(mk.df) == "task.spatial"] <- "Spatial"
 
-# Load the csv database
-mk.df <- read.csv(osf_file$local_path)
-
-# Remove the tom variables
-rm(osf_file, tmpdir)
 ```
 
 ## Participants
 
+# Mean and Std
+
 ```{r table1, echo=FALSE, message=FALSE, warning=FALSE}
 # Mean and Std
+mk.df$group <- factor(mk.df$group, levels = c("Patient", "Healthy"))
+
 mk.df %>%
-  dplyr::select(group, handedness, age, sex, mk6240.session, mCi.net, mk6240.Tdiff, EpiTrack.Score.age.corrected, Epi.Acc.D.per, task.semantic, hip.ipsi, hip.cntr) %>%
-  tbl_summary(by = group, missing = "no",
-              statistic = list(all_continuous() ~ "{mean}±{sd}"),
-              type = list(mCi.net ~ "continuous", age~"continuous"),
-              digits = list(age~1)) %>%
-  modify_header(label = "**Demographics**") %>% 
+  dplyr::select(
+    group, age, mk6240.mean, mk6240.sig, mk6240.mean.ipsi, mk6240.mean.contra, mk6240.sig.ipsi, mk6240.sig.contra, mCi.net, mk6240.Tdiff,mk6240.mri.Tdiff,
+    EpiTrack, Episodic,
+    Semantic, Spatial, hip.ipsi, hip.cntr
+  ) %>%
+  tbl_summary(
+    by = group,
+    missing = "no",
+    statistic = list(all_continuous() ~ "{mean}±{sd}"),
+    type = list(mCi.net ~ "continuous")
+  ) %>%                                   # <<< closed tbl_summary() properly
+  modify_header(label = "**Demographics**") %>%
   add_p(test = all_continuous() ~ "t.test") %>%
-  # adding the header will also unhide the column
   modify_header(statistic ~ "**Statistic**") %>%
-    as_kable_extra(
-      booktabs = TRUE,
-      longtable = TRUE,
-      linesep = ""
-    ) %>%
-    kableExtra::kable_styling(
-      position = "left",
-      latex_options = c("striped", "repeat_header"),
-      stripe_color = "gray!15"
-    )
+  as_kable_extra(
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+  ) %>%
+  kableExtra::kable_styling(
+    position = "left",
+    latex_options = c("striped", "repeat_header"),
+    stripe_color = "gray!15"
+  )
+
 ```
 
-## 18F-MK6240 SUVR
+## Sex distribution by group and session
 
-```{r table2, echo=FALSE, message=FALSE, warning=FALSE}
-# Mean and Std
+```{r sex.table, echo=FALSE, message=FALSE, warning=FALSE}
 mk.df %>%
-  dplyr::select(group, mk6240.mean,  mk6240.mean.ipsi, mk6240.mean.contra, mk6240.sig, mk6240.sig.ipsi,  mk6240.sig.contra) %>%
-  tbl_summary(by = group, missing = "no",
-              statistic = list(all_continuous() ~ "{mean}±{sd}"),
-              type = list(mk6240.mean ~ "continuous", mk6240.mean.ipsi~"continuous")) %>%
-  modify_header(label = "**18F-MK6240 SUVR**") %>% 
-  # add a header to the statistic column, which is hidden by default
-  add_p(test = all_continuous() ~ "t.test") %>%
-  # adding the header will also unhide the column
-  modify_header(statistic ~ "**Statistic**") %>%
-    as_kable_extra(
-      booktabs = TRUE,
-      longtable = TRUE,
-      linesep = ""
-    ) %>%
-    kableExtra::kable_styling(
-      position = "left",
-      latex_options = c("striped", "repeat_header"),
-      stripe_color = "gray!15"
-    )
+  dplyr::select(group, mk6240.session, sex, handedness, age, mk6240.Tdiff, mCi.net) %>%
+  tbl_strata(
+    strata = group,
+    .tbl_fun = ~ .x %>%
+      tbl_summary(
+        by = mk6240.session,
+        missing = "no",
+        type = list(sex ~ "categorical", age ~ "continuous", mk6240.Tdiff ~ "continuous"),
+        statistic = list(all_continuous() ~ "{mean}±{sd}", all_categorical() ~ "{n}")
+      )
+  )
 ```
+
+## Clinical characteristics of patients
 
 ```{r table3, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Boolean with the healthy controls
+hc <- which(mk.df$group == "Healthy")
+
+#### Z-scores two vectors based on the first  ####
+Zscore <- function(vec1,vec2) {
+  vec1 <- as.vector(vec1)
+  vec2 <- as.vector(vec2)
+  mu <- mean(vec1, na.rm=TRUE)
+  s <- sd(vec1, na.rm=TRUE)
+  Zvec <- (vec2 - mu)/s
+  return(Zvec)
+}
+
+# Create hippocampal atrophy vector (Normalized z-scored volume LESS than 2 std of controls)
+mk.df$hip.atrophy <- ifelse(Zscore(mk.df$hip.ipsi[hc], mk.df$hip.ipsi)<=-1.5,1,0)
+
+# Asymmetry z-score
+As <- (mk.df$hip.ipsi - mk.df$hip.cntr) / (mk.df$hip.ipsi + mk.df$hip.cntr)
+mk.df$assymetry <- ifelse(Zscore(As[hc],As)<=-1.5,1,0)
+
+# Hippocampal sclerosis is defines as either atrophy or asymmetry
+mk.df$hs <- as.numeric(mk.df$hip.atrophy |  mk.df$assymetry)
+
 # Mean and Std
 mk.df %>%
   subset(group=="Patient") %>% 
-  dplyr::select(group, duration, lateralization, origin) %>%
-  tbl_summary(by=group, missing = "no",
+  dplyr::select(mk6240.session, duration, onset, origin, lateralization, hip.atrophy, assymetry, hs) %>%
+  tbl_summary(by=mk6240.session, missing = "no",
               statistic = list(all_continuous() ~ "{mean}±{sd}"),
               type = list(duration ~ "continuous"),
               digits = list(duration~1)) %>%
@@ -202,7 +272,42 @@ mk.df %>%
     )
 ```
 
-## Figure1.B \| Group Differences in MK-6240 Uptake.
+
+### Group differences in graph metrics
+```{r gta.table, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
+
+mk.df$sc.pathlengh <- mk.df$sc.pathlengh/1e+15
+mk.df$sc.clustecoef <- mk.df$sc.clustecoef*1e5
+mk.df$sc.neighbors <- mk.df$sc.neighbors*1e3
+mk.df$sc.efficiency <-mk.df$sc.efficiency*1e2
+
+mk.df %>%
+  dplyr::select(
+    group, fc.strength, fc.clustecoef, fc.efficiency, fc.pathlengh, fc.neighbors,
+    sc.strength, sc.clustecoef, sc.efficiency, sc.pathlengh, sc.neighbors
+  ) %>%
+  tbl_summary(
+    by = group,
+    missing = "no",
+    statistic = list(all_continuous() ~ "{mean}±{sd}")
+  ) %>%                                   # <<< closed tbl_summary() properly
+  modify_header(label = "**Functional connectivity metrics**") %>%
+  add_p(test = all_continuous() ~ "t.test") %>%
+  modify_header(statistic ~ "**Statistic**") %>%
+  as_kable_extra(
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+  ) %>%
+  kableExtra::kable_styling(
+    position = "left",
+    latex_options = c("striped", "repeat_header"),
+    stripe_color = "gray!15"
+  )
+```
+
+
+## Figure1.B \| Group Differences in MK-6240 SUVR
 
 Violin plots display the mean SUVR values for significant regions in each hemisphere by group, with significant differences assessed using a two-tailed Wilcoxon rank-sum test.
 
@@ -219,7 +324,7 @@ data_summary <- function(x) {
 # Reorder levels
 mk.df$group <- factor(mk.df$group, levels = c("Patient", "Healthy"))
 
-# Ipsilateral values per type
+# Ipsilateral values per type: suvr_ipsi.svg
 g.ipsi <- ggplot(mk.df, aes(x=group, y=mk6240.sig.ipsi, color=group)) + 
   geom_violin() + 
   geom_jitter(shape=16, position=position_jitter(0.1)) + 
@@ -231,7 +336,7 @@ g.ipsi <- ggplot(mk.df, aes(x=group, y=mk6240.sig.ipsi, color=group)) +
   theme(plot.title = element_text(hjust = 0.5),
     legend.position = "none")
 
-# Contralateral values per type
+# Contralateral values per type: suvr_cntr.svg
 g.contra <- ggplot(mk.df, aes(x=group, y=mk6240.sig.contra, color=group)) + 
   geom_violin() + 
   geom_jitter(shape=16, position=position_jitter(0.1)) + 
@@ -251,11 +356,14 @@ grid.arrange(grobs = list(g.ipsi, g.contra), ncol = 2)
 
 ```
 
+## Figure1.C (supplementary) \| Group Differences in MK-6240 SUVR by sex.
+
 ## Figure.3A \| Tau MK-6240 SUVR and clinical relationships
 
 Scatter plot display of the relationship of mean MK-6240 SUVR with behavioral and clinical measures. Duration and age are measured in *years*, while all the behavioral measurements where z-scores based in the control group.
 
-```{r figure3a, fig.width=6.5, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+```{r figure3a, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+# Save Figures as Correlation with behavior 1000 x 315 px
 
 # FUNCTION - Plot correlations using ggplot2
 plot_corr_ggplot <- function(mk620, value, Col=NULL, Xlab="Z-score", Ylab="mean SUVR",
@@ -287,8 +395,15 @@ plot_corr_ggplot <- function(mk620, value, Col=NULL, Xlab="Z-score", Ylab="mean 
 # Subset of cross-sectional subjects
 mk.ses1 <- mk.df[mk.df$mk6240.session == 1, ]
 
-# Clinical correlations with mean pet deposits
+# encode duration on controls as NA
+mk.ses1$duration <- ifelse(mk.ses1$duration==0,NA, mk.ses1$duration)
+
+# Boolean with the patients
 tle <- which(mk.ses1$group == "Patient")
+
+# Z-score based in controls
+col.zscore <- c("EpiTrack", "Episodic", "Semantic", "Spatial", "hip.ipsi", "hip.cntr")
+mk.ses1[,col.zscore] <- apply(mk.ses1[,col.zscore], 2, function(x) Zscore(x[hc],x) )
 
 # Colors as Longitudinal subjects
 ind <- as.character(mk.ses1$participant_id) %in% mk.ses1$participant_id[duplicated(mk.ses1$participant_id)]
@@ -297,37 +412,7 @@ ind <- as.character(mk.ses1$participant_id) %in% mk.ses1$participant_id[duplicat
 col.group <- c("#666666", "#ff5555")[mk.ses1$group]
 
 # Variables to correlate
-corr.cli <- c("age", "duration")
-
-# List to store plots
-plot_list <- list()
-
-# Set the variable to correlate with clinical
-for (i in seq_along(corr.cli)) {
-  var_name <- corr.cli[i]
-  for (j in c("mk6240.mean")) {
-    mk.val <- mk.ses1[, j]
-    
-    # Plot data
-    x <- mk.ses1[, var_name]
-    p <- plot_corr_ggplot(mk.val, x, Xlab = "years", Ylab = "Mean SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.5))
-    plot_list <- c(plot_list, list(p))
-  }
-}
-
-# Arrange plots in a grid
-grid.arrange(grobs = plot_list, ncol = 2)
-
-```
-
-## Figure.3B \| Tau MK-6240 SUVR and behavioural relationships
-
-# Correlation with behavior 1000 x 945 px
-
-```{r figure3b, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
-
-# Variables to correlate
-corr.cli <- c("EpiTrack.Score.age.corrected", "Epi.Acc.D.per", "task.semantic")
+corr.cli <- c("age", "duration", "onset")
 
 # List to store plots
 plot_list <- list()
@@ -340,7 +425,95 @@ for (i in seq_along(corr.cli)) {
     
     # Plot data
     x <- mk.ses1[, var_name]
-    p <- plot_corr_ggplot(mk.val, x, Xlab = "z-score", Ylab = "Mean significant SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "years", Ylab = "SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
+    plot_list <- c(plot_list, list(p))
+  }
+}
+
+# Arrange plots in a grid
+grid.arrange(grobs = plot_list, ncol = 3, nrow = 1)
+```
+
+## Correlation with IEDs and GTCS frequency
+```{r figure3a, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+# Save Figures as Correlation with behavior 1000 x 315 px
+
+# log GTCSF +1
+mk.ses1$GTCSF.log <- log(mk.ses1$GTCSF + 1)
+
+# Variables to correlate
+corr.cli <- c("IEDs", "GTCSF.log", "Spatial")
+
+# List to store plots
+plot_list <- list()
+
+# Set the variable to correlate with clinical
+for (i in seq_along(corr.cli)) {
+  var_name <- corr.cli[i]
+  for (j in c("mk6240.sig")) {
+    mk.val <- mk.ses1[, j]
+    
+    # Plot data
+    x <- mk.ses1[, var_name]
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "frequency", Ylab = "SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
+    plot_list <- c(plot_list, list(p))
+  }
+}
+
+# Arrange plots in a grid
+grid.arrange(grobs = plot_list, ncol = 3, nrow = 1)
+```
+
+
+## Figure.3B \| Tau MK-6240 SUVR and behavioural relationships
+
+```{r figure3b, fig.width=7, fig.height=6, warning=FALSE, echo=FALSE, message=FALSE}
+# Save Figures as Correlation with behavior 1000 x 315 px
+
+# Variables to correlate
+corr.cli <- c("EpiTrack", "Episodic", "Semantic", "Spatial")
+
+# List to store plots
+plot_list <- list()
+
+# Set the variable to correlate with clinical
+for (i in seq_along(corr.cli)) {
+  var_name <- corr.cli[i]
+  for (j in c("mk6240.sig")) {
+    mk.val <- mk.ses1[, j]
+    
+    # Plot data
+    x <- mk.ses1[, var_name]
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "z-score", Ylab = "SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
+    plot_list <- c(plot_list, list(p))
+  }
+}
+
+# Arrange plots in a grid
+grid.arrange(grobs = plot_list, ncol = 2, nrow = 2)
+
+```
+
+## Figure.3C \| Tau MK-6240 SUVR and hippocampal volume
+
+```{r figure3c, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+# Save Figures as Correlation with behavior 1000 x 315 px
+
+# Variables to correlate
+corr.cli <- c("hip.ipsi", "hip.cntr","suvr.ipsi.hippocampus")
+
+# List to store plots
+plot_list <- list()
+
+# Set the variable to correlate with clinical
+for (i in seq_along(corr.cli)) {
+  var_name <- corr.cli[i]
+  for (j in c("mk6240.sig")) {
+    mk.val <- mk.ses1[, j]
+    
+    # Plot data
+    x <- mk.ses1[, var_name]
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "z-score", Ylab = "SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
     plot_list <- c(plot_list, list(p))
   }
 }
@@ -350,9 +523,12 @@ grid.arrange(grobs = plot_list, ncol = 3)
 
 ```
 
-## Supplementary Figure.4 \| Mean longitudinal *18F-MK6240*
+## Supplementary Figure.4 \| Differential trajectories of *18F-MK6240*
 
-Differential trajectories of $[F^18]MK-6240$ uptake by group between the PET scan session 1 and 2 in the significant areas. The lines correspond to the longitudinal subjects.
+Trajectories of $[F^18]MK-6240$ uptake by group between the PET scan session 1 and 2 in the significant areas. The lines correspond to the longitudinal subjects.
+
+$$mk6240_{significant} \sim mk6240_{\Delta t} * group + (1 | participant_{id} )$$
+
 
 ```{r Supfigure4, fig.width=10, fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
 plot_long <- function(cmk.df, col_name="mk6240.sig", cols=c("#ff5555", "#666666"), Title="") {
@@ -388,7 +564,6 @@ plot_long <- function(cmk.df, col_name="mk6240.sig", cols=c("#ff5555", "#666666"
 # Set the layout 1 row 2 columns
 par(mfrow=c(1,2))
 
-
 # Plot Patients
 plot_long(mk.df, col_name = "mk6240.sig", cols=c("#ff5555", NA), Title="Patients")
 
@@ -401,6 +576,9 @@ plot_long(mk.df, col_name = "mk6240.sig", cols=c(NA, "#666666"), Title="Healthy 
 
 # Make group a factor
 mk.df$group <- as.factor(mk.df$group)
+
+# Make sure group is a factor with Patient - Healthy order (positive if Patient is higher)
+mk.df$group <- factor(mk.df$group, levels = c("Healthy", "Patient"))
 
 # Change months to years
 mk.df$mk6240.Tdiff.yrs <- mk.df$mk6240.Tdiff/12
@@ -418,17 +596,496 @@ emtrends_result <- emtrends(mem, pairwise ~ group, var = "mk6240.Tdiff.yrs")
 print(emtrends_result$emtrends)
 ```
 
-No significant interaction (`mk6240.Tdiff.yrs:groupHealthy`, p = 0.525) was found, suggesting that the rate of change in `mk6240.sig` over time is not significantly different between the Healthy and Patient groups.
+No significant interaction (`mk6240.Tdiff.yrs:groupHealthy`, p = 0.766) was found, suggesting that the rate of change in `mk6240.sig` over time is not significantly different between the Healthy and Patient groups.
 
--   **Healthy Group**: The estimated slope is `-0.0088` per year (95% CI: -0.0425 to 0.0249). This suggests a slight decrease in `mk6240.sig` over time, but the change is small and not statistically significant (p = 0.704).
+-   **Healthy Group**: The estimated slope is `-0.0026` per year (95% CI: -0.034 to 0.0287). This suggests a slight decrease in `mk6240.sig` over time, but the change is small and not statistically significant.
 
--   **Patient Group**: The estimated slope is `0.0078` per year (95% CI: -0.0347 to 0.0502), indicating a slight increase in `mk6240.sig` over time, though this change is also not statistically significant.
+-   **Patient Group**: The estimated slope is `0.0041` per year (95% CI: -0.0309 to 0.0391), indicating a slight increase in `mk6240.sig` over time, though this change is also not statistically significant.
 
 There is no strong evidence that `mk6240.sig` changes over time in either the Healthy or Patient groups, nor that the rate of change differs significantly between them. However, the significant main effect of group (p < 0.001) suggests that `mk6240.sig` is, on average, lower in the Healthy group compared to Patients.
 
 
-```{r, include=FALSE}
-   # add this chunk to end of mycode.rmd
-   file.rename(from="Increased_in-vivo_tau_in_TLE.md", 
-               to="README.md")
+# Linear mixed effects model of MK-6240 and clinical features
+
+### Full model
+
+$$\text{mk6240}_{\text{sig}} \sim \text{sex} * \text{group} + \text{age} + \text{DRE} + \text{ASM}_{\text{number}} + \text{origin} + \text{duration} + \text{hippocampus}_{\text{ipsi}} + (1 \,|\, \text{participant}_{\text{id}} )$$
+
+### Full model
+
+```{r lme-cli, warning=FALSE, echo=FALSE, message=FALSE}
+
+mk.df$group <- factor(mk.df$group)
+mk.df$sex <- factor(mk.df$sex)
+mk.df$lateralization <- factor(mk.df$lateralization)
+mk.df$origin <- factor(mk.df$origin)
+mk.df$dre <- factor(mk.df$dre)
+
+mk.df$sx.number[is.na(mk.df$sx.number)] <- 0
+mk.df$duration[is.na(mk.df$duration)] <- 0
+mk.df$asm.number[is.na(mk.df$asm.number)] <- 0
+
+# Fit the mixed-effects model
+mem <- lmer(mk6240.sig ~ sex*group + age +
+               dre + asm.number + origin +
+               duration +  hip.ipsi + sx.number + (1 | participant_id), data = mk.df)
+
+# Summarize the model to view the fixed effects
+summary(mem)
+
 ```
+
+## Tuned model
+
+$$\text{mk6240}_{\text{sig}} \sim \text{sex} * \text{group} + \text{age} + \text{ASM}_{\text{number}} + (1 \,|\, \text{participant}_{\text{id}} )$$
+
+```{r lme-cli-tuned, warning=FALSE, echo=FALSE, message=FALSE, fig.width=6, fig.height=4}
+# Fit model
+mem2 <- lmer(mk6240.sig ~ sex * group + age + asm.number + (1 | participant_id), data = mk.df)
+
+# Compute estimated marginal means
+emm <- emmeans(mem2, ~ sex | group)
+emm_df <- as.data.frame(emm)
+
+# Plot raw data + regression lines + EMMs with 95% CI
+ggplot() +
+  # Raw data points
+  geom_point(data = mk.df, aes(x = group, y = mk6240.sig, color = sex),
+             position = position_jitter(width = 0.1, height = 0)) +
+  # Linear fit for raw data
+  geom_smooth(data = mk.df, aes(x = group, y = mk6240.sig, color = sex, group = sex),
+              method = "lm", se = TRUE) +
+  # EMM points
+  geom_point(data = emm_df, aes(x = group, y = emmean, color = sex),
+             position = position_dodge(width = 0.4), size = 3, shape = 18) +
+  # EMM error bars
+  geom_errorbar(data = emm_df, aes(x = group, ymin = lower.CL, ymax = upper.CL, color = sex),
+                position = position_dodge(width = 0.4), width = 0.15) +
+  # Labels and theme
+  labs(title = "Interaction of Sex x Group on mk6240",
+       y = "mk6240.sig",
+       x = "Group") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+# Print summary table
+summary(mem2)
+```
+# Subcortical MK-6240 SUVR analysis
+
+```{r sub.stats, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Make sure group is a factor with Patient - Healthy order (positive if Patient is higher)
+mk.df$group <- factor(mk.df$group, levels = c("Patient", "Healthy"))
+
+# Define subcortical regions
+sctx.str <- c("suvr.ipsi.thalamus", "suvr.ipsi.caudate", "suvr.ipsi.putamen", "suvr.ipsi.pallidus","suvr.ipsi.amygdala", "suvr.ipsi.hippocampus", "suvr.ipsi.accumbens", 
+              "suvr.cntr.thalamus", "suvr.cntr.caudate", "suvr.cntr.putamen", "suvr.cntr.pallidus","suvr.cntr.amygdala", "suvr.cntr.hippocampus", "suvr.cntr.accumbens")
+
+# Rename columns
+idx <- names(mk.df) %in% sctx.str
+names(mk.df)[idx] <- gsub("^suvr\\.", "", names(mk.df)[idx])
+sctx.str <- gsub("suvr.", "", sctx.str)
+
+# Mean and Std
+mk.df %>%
+  dplyr::select(
+    group, all_of(sctx.str)) %>%
+  tbl_summary(
+    by = group,
+    missing = "no",
+    statistic = list(all_continuous() ~ "{mean}±{sd}"),
+  ) %>%                                   # <<< closed tbl_summary() properly
+  modify_header(label = "**Subcortical SUVR**") %>%
+  add_p(test = all_continuous() ~ "t.test") %>%
+  modify_header(statistic ~ "**Statistic**") %>%
+  as_kable_extra(
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+  ) %>%
+  kableExtra::kable_styling(
+    position = "left",
+    latex_options = c("striped", "repeat_header"),
+    stripe_color = "gray!15"
+  )
+```
+
+
+## Subcortical data MEM
+
+```{r sub.mem, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5, fig.height=8}
+  
+# FOR MEM Make sure group is a factor with Patient - Healthy order (positive if Patient is higher)
+mk.df$group <- factor(mk.df$group, levels = c("Healthy", "Patient"))
+
+# Make sure group is a factor with F - M order (positive if F is higher) REFERENCE is F
+mk.df$sex   <- factor(mk.df$sex,   levels = c("F", "M"))
+
+# ----------------------------
+# Mixed-effects model contrasts
+# ----------------------------
+memgroup <- function(region, data = mk.df) {
+  
+  # Build formula dynamically
+  fml <- as.formula(paste(region, "~ sex * group + age + (1 | participant_id)"))
+  
+  # Fit mixed-effects model
+  model <- lmer(fml,data = data)
+  
+  # get the coefficients
+  tvals <- summary(model)$coefficients[c("groupPatient", "sexM", "sexM:groupPatient", "age"), "t value"]
+  pvals <- summary(model)$coefficients[c("groupPatient", "sexM", "sexM:groupPatient", "age"), "Pr(>|t|)"]
+
+  return(list(tvals,pvals))
+  # return(summary(model))
+}
+
+# Run mixed model contrasts for all regions
+mem_tt <- sctx.str %>%
+  setNames(., .) %>%
+  lapply(function(region) memgroup(region, mk.df)) 
+
+# Extract [[1]] and [[2]] across all elements
+sub.tvals <- do.call(rbind, lapply(mem_tt, `[[`, 1))
+sub.pvals <- do.call(rbind, lapply(mem_tt, `[[`, 2))
+
+# Make rownames useful
+rownames(sub.tvals) <- names(mem_tt)
+rownames(sub.pvals) <- names(mem_tt)
+
+# Significant areas after p-value correction
+n.pvals <- sum(apply(sub.pvals, 2, function(p) p.adjust(p, method = "BH"))<0.025)
+cat("Number of significant areas after p-value correction:", n.pvals, "\n")
+
+# Use RdBu with reversed colors
+corrplot(
+  sub.tvals,
+  is.corr = FALSE,
+  method = "color",
+  col = rev(brewer.pal(n = 11, name = "RdBu")),  # inverted RdBu
+  addgrid.col = "white",
+  addCoef.col = "black",
+  tl.col = "black",
+  tl.srt = 45,
+  number.cex = 0.7,
+  cl.pos = "r",
+  col.lim = c(-3, 3.3)
+)
+
+```
+
+
+
+```{r sub-cli, warning=FALSE, echo=FALSE, message=FALSE, fig.width=8, fig.height=8}
+  
+# Variables to correlate
+vars <- c("age", "duration", "onset","EpiTrack", "Episodic", "Semantic","hip.ipsi", "hip.cntr","mCi.net")
+
+# Initialize p-value matrix
+sub.rhos <- sub.pvals <- matrix(NA, nrow = length(vars), ncol = length(sctx.str),
+               dimnames = list(vars, sctx.str))
+
+# Compute p-values
+for(i in seq_along(vars)) {
+  for(j in seq_along(sctx.str)) {
+    tmp <- cor.test(mk.df[[vars[i]]], mk.df[[sctx.str[j]]], 
+                    method = "spearman", exact = FALSE, na.action = na.omit)
+    sub.pvals[i, j] <- tmp$p.value
+    sub.rhos[i, j] <- tmp$estimate
+  }
+}
+
+# Adjust p-values (Benjamini–Hochberg BH to control the false discovery rate)
+pval.adj <- apply(sub.pvals, 2, function(p) p.adjust(p, method = "hommel"))
+
+# Significant areas after p-value correction
+n.pvals <- sum(apply(pval.adj, 2, function(p) p.adjust(p, method = "BH"))<0.05)
+cat("Number of significant areas after p-value correction:", n.pvals, "\n")
+
+# Use RdBu with reversed colors
+corrplot(
+  t(sub.rhos),
+  is.corr = TRUE,
+  method = "color",
+  col = rev(brewer.pal(n = 11, name = "RdBu")),  # inverted RdBu
+  addgrid.col = "white",
+  addCoef.col = "black",
+  tl.col = "black",
+  tl.srt = 45,
+  number.cex = 0.7,
+  cl.pos = "r"
+)
+  
+```
+
+# Clinical database of patients
+```{r cli-tle, warning=FALSE, echo=FALSE, message=FALSE}
+supplementary_clinical_table <- mk.df %>%
+  # Filter for Patient group and session 1
+  filter(group == "Patient", mk6240.session == 1) %>%
+  # Round mk6240.sig to 2 decimals
+  mutate(mk6240.sig = round(mk6240.sig, 2)) %>%
+  # Rename sx.number to surgery and recode 0=no, 1=yes
+  rename(surgery = sx.number) %>%
+  mutate(surgery = ifelse(surgery == 0, "no", "yes")) %>%
+  # Replace NA in ilae.class with empty string
+  mutate(ilae.class = ifelse(is.na(ilae.class), "", ilae.class)) %>%
+  # Recode hip.atrophy 0=no, 1=yes
+  mutate(hs = ifelse(hs == 0, "no", "yes")) %>%
+  # Select relevant columns
+  select(
+    sex, age, handedness, Language,
+    epilepsy.class, lateralization, origin, onset, duration,
+    hs, GTCSF, IEDs, surgery, engel
+  )
+
+supplementary_clinical_table
+
+# Save to CSV
+write.csv(supplementary_clinical_table, "/Users/rcruces/Desktop/OSF_data_revision-2025/supplementary_clinical_table.csv", row.names = FALSE)
+
+```
+
+# Supplementary Figure.5 \| MK-6240, behavioral and graph metrics interactons
+
+### MK-6240, behavioral and graph metrics correlogram
+```{r all_corr, fig.width=10, fig.height=10, warning=FALSE, echo=FALSE, message=FALSE}
+# Variables to correlate
+vars <- c("mk6240.sig","EpiTrack", "Episodic", "Semantic", "hip.ipsi", "hip.cntr",
+          "fc.neighbors", "fc.strength", "fc.clustecoef", "fc.efficiency", "fc.pathlengh",  
+          "sc.neighbors", "sc.strength", "sc.clustecoef", "sc.efficiency", "sc.pathlengh")
+
+ggpairs_colored <- function(data, mapping, method="p", use="pairwise", ...){
+  
+  # grab data
+  x <- eval_data_col(data, mapping$x)
+  y <- eval_data_col(data, mapping$y)
+  
+  # calculate correlation
+  corr <- cor(x, y, method=method, use=use)
+  
+  # calculate colour based on correlation value
+  # Here I have set a correlation of minus one to blue, 
+  # zero to white, and one to red 
+  # Change this to suit: possibly extend to add as an argument of `my_fn`
+  colFn <- colorRampPalette(rev(brewer.pal(n = 11, name = "RdBu")), interpolate ='spline')
+  fill <- colFn(100)[findInterval(corr, seq(-1, 1, length=100))]
+  
+  ggally_cor(data = data, mapping = mapping, ...) + 
+    theme_void() +
+    theme(panel.background = element_rect(fill=fill))
+}
+
+# Plot correlogram
+ggpairs(mk.ses1[,vars], 
+              upper = list(continuous = ggpairs_colored),
+              lower = list(continuous = "smooth"))  
+```
+
+# MK-6240, behavioral and graph metrics SEM
+
+## SEM model for Epitrack
+
+```{r sem_epitrack, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE, message=FALSE}
+model <- '
+  # Label paths for the mediation
+  sc.neighbors ~ a * mk6240.sig
+  EpiTrack ~ b * sc.neighbors + c_prime * mk6240.sig
+
+  # Define the Indirect Effect (a*b) and Total Effect (a*b + c_prime)
+  indirect := a * b
+  total := c_prime + indirect
+'
+
+fit <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 1000)
+summary(fit, standardized = TRUE, fit.measures = TRUE)
+
+lavaanPlot(model = fit,
+           coefs = TRUE,       # show coefficients
+           stand = TRUE,       # standardized coefficients
+           sig = 0.05)         # only show significant paths
+```
+
+## SEM model for Episodic Memory
+
+```{r sem_episodic, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE, message=FALSE}
+model <- '
+  # Label paths for the mediation
+  sc.neighbors ~ a * mk6240.sig
+  Episodic ~ b * sc.neighbors + c_prime * mk6240.sig
+
+  # Define the Indirect Effect (a*b) and Total Effect (a*b + c_prime)
+  indirect := a * b
+  total := c_prime + indirect
+'
+
+fit <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 1000)
+summary(fit, standardized = TRUE, fit.measures = TRUE)
+
+lavaanPlot(model = fit,
+           coefs = TRUE,       # show coefficients
+           stand = TRUE,       # standardized coefficients
+           sig = 0.05)         # only show significant paths
+```
+
+## SEM model for Semantic Memory
+
+```{r sem_semantic, fig.width=10, fig.height=6, warning=FALSE, echo=FALSE, message=FALSE}
+
+model <- '
+  # Label paths for the mediation
+  sc.neighbors ~ a * mk6240.sig
+  Semantic ~ b * sc.neighbors + c_prime * mk6240.sig
+
+  # Define the Indirect Effect (a*b) and Total Effect (a*b + c_prime)
+  indirect := a * b
+  total := c_prime + indirect
+'
+
+fit <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 1000)
+summary(fit, standardized = TRUE, fit.measures = TRUE)
+
+lavaanPlot(model = fit,
+           coefs = TRUE,       # show coefficients
+           stand = TRUE,       # standardized coefficients
+           sig = 0.05)         # only show significant paths
+```
+
+### Full SEM model with multiple mediators and outcomes
+
+```{r sem_full, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+# https://mspeekenbrink.github.io/sdam-r-companion/structural-equation-modelling-with-lavaan.html
+
+model <- '
+  # ------------------------------
+  # Predictor → mediators (regressions with ~)
+  sc.neighbors   ~ a1 * mk6240.sig
+  sc.efficiency  ~ a2 * mk6240.sig
+
+  # ------------------------------
+  # Covariance between mediators (~~)
+  sc.neighbors ~~ sc.efficiency
+
+  # ------------------------------
+  # Outcomes regressed on mediators + predictor (~)
+  EpiTrack  ~ b11 * sc.neighbors + b12 * sc.efficiency + c1 * mk6240.sig
+  Episodic  ~ b21 * sc.neighbors + b22 * sc.efficiency + c2 * mk6240.sig
+  Semantic  ~ b31 * sc.neighbors + b32 * sc.efficiency + c3 * mk6240.sig
+
+  # ------------------------------
+  # Residual covariances between outcomes (~~)
+  EpiTrack ~~ Episodic
+  EpiTrack ~~ Semantic
+  Episodic ~~ Semantic
+  
+  # ------------------------------
+  # Indirect effects (:= defines derived parameters)
+  # Epitrack
+  ind_Epitrack_neighbors   := a1 * b11
+  ind_Epitrack_efficiency  := a2 * b12
+  ind_Epitrack_total       := ind_Epitrack_neighbors + ind_Epitrack_efficiency
+
+  # Episodic
+  ind_Episodic_neighbors   := a1 * b21
+  ind_Episodic_efficiency  := a2 * b22
+  ind_Episodic_total       := ind_Episodic_neighbors + ind_Episodic_efficiency
+
+  # Semantic
+  ind_Semantic_neighbors   := a1 * b31
+  ind_Semantic_efficiency  := a2 * b32
+  ind_Semantic_total       := ind_Semantic_neighbors + ind_Semantic_efficiency
+
+# ------------------------------
+  # Total effects (:= combines direct + indirect)
+  total_Epitrack := c1 + ind_Epitrack_total
+  total_Episodic := c2 + ind_Episodic_total
+  total_Semantic := c3 + ind_Semantic_total
+'
+
+fit.full <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 10000)
+summary(fit.full, standardized = TRUE, fit.measures = TRUE)
+
+lavaanPlot(model = fit.full,
+           coefs = TRUE,       # show coefficients
+           stand = TRUE,       # standardized coefficients
+           sig = 0.05)         # only show significant paths
+
+```
+
+### Full SEM model with multiple mediators and outcomes and hippocampus
+```{r sem_full+hip, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+# https://mspeekenbrink.github.io/sdam-r-companion/structural-equation-modelling-with-lavaan.html
+
+model <- '
+# ------------------------------
+# Predictor → mediators
+sc.neighbors   ~ a1 * mk6240.sig
+sc.efficiency  ~ a2 * mk6240.sig
+hip.ipsi       ~ a3 * mk6240.sig
+
+# ------------------------------
+# Covariance between mediators (ONLY remaining ones)
+sc.neighbors  ~~ sc.efficiency
+hip.ipsi      ~~ sc.neighbors
+hip.ipsi      ~~ sc.efficiency
+
+# ------------------------------
+# Outcomes regressed on mediators + predictor
+EpiTrack  ~ b11 * sc.neighbors + b12 * sc.efficiency +
+            b13 * hip.ipsi     +
+            c1  * mk6240.sig
+
+Episodic  ~ b21 * sc.neighbors + b22 * sc.efficiency +
+            b23 * hip.ipsi     +
+            c2  * mk6240.sig
+
+Semantic  ~ b31 * sc.neighbors + b32 * sc.efficiency +
+            b33 * hip.ipsi     +
+            c3  * mk6240.sig
+
+# ------------------------------
+# Residual covariances between outcomes
+EpiTrack ~~ Episodic
+EpiTrack ~~ Semantic
+Episodic ~~ Semantic
+
+# ------------------------------
+# Indirect effects
+# EpiTrack
+ind_Epitrack_neighbors   := a1 * b11
+ind_Epitrack_efficiency  := a2 * b12
+ind_Epitrack_hip_ipsi    := a3 * b13
+ind_Epitrack_total := ind_Epitrack_neighbors +ind_Epitrack_efficiency + ind_Epitrack_hip_ipsi
+
+# Episodic
+ind_Episodic_neighbors   := a1 * b21
+ind_Episodic_efficiency  := a2 * b22
+ind_Episodic_hip_ipsi    := a3 * b23
+ind_Episodic_total := ind_Episodic_neighbors + ind_Episodic_efficiency + ind_Episodic_hip_ipsi
+
+# Semantic
+ind_Semantic_neighbors   := a1 * b31
+ind_Semantic_efficiency  := a2 * b32
+ind_Semantic_hip_ipsi    := a3 * b33
+ind_Semantic_total := ind_Semantic_neighbors + ind_Semantic_efficiency + ind_Semantic_hip_ipsi
+
+# ------------------------------
+# Total effects
+total_Epitrack := c1 + ind_Epitrack_total
+total_Episodic := c2 + ind_Episodic_total
+total_Semantic := c3 + ind_Semantic_total
+'
+
+fit.full <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 1000)
+summary(fit.full, standardized = TRUE, fit.measures = TRUE)
+
+lavaanPlot(model = fit.full,
+           coefs = TRUE,       # show coefficients
+           stand = TRUE,       # standardized coefficients
+           sig = 0.05)         # only show significant paths
+
+```
+
+
+
