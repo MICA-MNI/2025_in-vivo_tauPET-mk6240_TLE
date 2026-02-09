@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/github/license/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE)](https://github.com/MICA-MNI/2025_in-vivo_tauPET-mk6240_TLE/blob/main/LICENSE)
 
 **Cite:** 
-> *[Raúl R. Cruces](mailto:raul.rodriguezcruces@mcgill.ca), Jack Lam, Thaera Arafat, Jessica Royer, Judy Chen, Ella Sahlas, Raluca Pana, Robert Hopewell, Hung-Hsin Hsiao, Gassan Massarweh, Jean-Paul Soucy, Sylvia Villeneuve, Lorenzo Caciagli, Matthias Koepp, Andrea Bernasconi, Neda Ladbon-Bernasconi, [Boris C. Bernhardt](mailto:boris.bernhardt@mcgill.ca)*. (2025). In-vivo evidence for increased tau deposition in temporal lobe epilepsy ... 
+> *[Raúl R. Cruces](mailto:raul.rodriguezcruces@mcgill.ca), Jack Lam, Thaera Arafat, Jessica Royer, Judy Chen, Ella Sahlas, Arielle Dascal, Daniel Mendelson, Raluca Pana, Robert Hopewell, Chris Hung-Hsin Hsiao, Gassan Massarweh, Jean-Paul Soucy, Pedro Rosa-Neto, Marie-Christine Guiot, Sylvia Villeneuve, Lorenzo Caciagli, Matthias J. Koepp, Andrea Bernasconi, Neda Ladbon-Bernasconi, [Boris C. Bernhardt](mailto:boris.bernhardt@mcgill.ca)*. (2026). In-vivo evidence for increased tau deposition in temporal lobe epilepsy ... 
 
 **DOI:** [TBD]().  
 
@@ -26,8 +26,8 @@ This repository contains the code and data processing pipelines to replicate the
 
 ## Dataset  
 ### Participants  
-- **18 TLE patients** (7 with longitudinal follow-up)  
-- **20 healthy controls** (10 with longitudinal follow-up)  
+- **28 TLE patients** (13 with longitudinal follow-up)  
+- **28 healthy controls** (7 with longitudinal follow-up)  
 
 ### Imaging Data Acquisition  
 - **MRI**: 3T Siemens Magnetom Prisma-Fit scanner  
@@ -43,15 +43,15 @@ This repository contains the code and data processing pipelines to replicate the
 | Directories   | Description                |
 |---------------|----------------------------|
 | [`./scripts`](https://github.com/MICA-MNI/in-vivo_tauPET-mk6240_TLE/tree/master/scripts)     | Notebooks for processing, and perform the analysis to reproduce the findings.   |
-| [`OSF ct3gw`](https://osf.io/ct3gw/wiki/home/) | This repository contains all the hosted data.  |
+| [`OSF ct3gw`](https://osf.io/ct3gw/wiki/home/) | This repository hosts all data used in the project.  |
 
 ## Abstract
 
-**Background and Objectives.** Temporal lobe epilepsy (TLE), the most common drug-resistant epilepsy in adults, is associated with structural alterations beyond the primary mesiotemporal substrate. Although TLE is traditionally not considered a neurodegenerative disorder, emerging evidence from ex-vivo specimens have shown elevated levels of misfolded tau protein, a hallmark of neurodegeneration. In this study, we assessed the in-vivo deposits of tau-aggregates in TLE using 18F-MK6240, a recently validated in-vivo positron emission tomography (PET) tracer.
- 
-**Methods.** We included 18 drug-resistant TLE patients, and 20 age-and sex-matched healthy controls (7 and 10 with longitudinal follow up). PET data were registered to the T1-weighted 3T MRI, where they were partial-volume corrected, normalized for cerebellar grey matter uptake to obtain a standardized uptake value ratio, and mapped to cortical surfaces. We compared MK6240 uptake between TLE patients and healthy controls using linear mixed effects models, controlling for age and sex, and multiple comparisons. We examined the correlations between the group difference in MK6240 and functional and structural connectivity information, to study network effects on tau uptake. Finally, we evaluated relationships between the tau uptake and clinical as well as cognitive measures.
- 
-**Results.** Compared to controls, patients presented with increased MK6240 uptake in bilateral superior and medial temporal as well as parietal regions. No significant longitudinal changes were observed within the one-year evaluation period. The spatial pattern of MK6240 uptake increases was related to local functional and structural connectome architecture, suggesting an effect of inter-regional connectivity. While age had no significant effect, disease duration was positively related to overall MK6240 uptake in patients. Behavioral measures of executive function and episodic memory demonstrated a negative relationship with MK6240 uptake. In contrast, measures of semantic memory showed no significant relationship.
- 
-**Discussion.** Our findings show elevated phosphorylated tau measured with MK6240 uptake in TLE patients in a bilateral temporo-posterior distribution, which correlates to disease duration, local connectivity patterns, and cognitive dysfunction.  While our findings suggest that tau accumulation plays a role in TLE progression, confirmation in larger samples with longer follow up is warranted to verify the hypothesized role of tau as a modulator of neurodegenerative cascades in drug-resistant epilepsy.
+Temporal lobe epilepsy (TLE), the most common pharmaco-resistant epilepsy in adults, has been linked to structural brain changes extending beyond the mesiotemporal areas. While not traditionally viewed as a neurodegenerative disorder, recent ex-vivo studies have shown elevated levels of misfolded tau protein in TLE. 
+
+This study investigated tau deposition in TLE patients using the in-vivo PET tracer [18F]MK-6240. We studied 28 TLE patients and 28 healthy controls to assess tau uptake and its relationship with brain connectivity, clinical variables, and cognitive function. 
+
+Compared to controls, TLE patients exhibited markedly increased [18F]MK-6240 uptake in bilateral superior and medial temporal regions and the parietal cortex, with tau accumulation following regional functional and structural connectivity and cognitive impairment. 
+
+These findings suggest that tau accumulation contributes to cognitive decline observed in TLE, supporting a potential role of tau in epilepsy-related neurodegeneration.
 

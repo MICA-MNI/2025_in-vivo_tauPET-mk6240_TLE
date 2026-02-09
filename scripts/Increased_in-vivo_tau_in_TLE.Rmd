@@ -242,11 +242,11 @@ Zscore <- function(vec1,vec2) {
 }
 
 # Create hippocampal atrophy vector (Normalized z-scored volume LESS than 2 std of controls)
-mk.df$hip.atrophy <- ifelse(Zscore(mk.df$hip.ipsi[hc], mk.df$hip.ipsi)<=-1.5,1,0)
+mk.df$hip.atrophy <- ifelse(mk.df$hip.ipsi<=-1.5,1,0)
 
 # Asymmetry z-score
 As <- (mk.df$hip.ipsi - mk.df$hip.cntr) / (mk.df$hip.ipsi + mk.df$hip.cntr)
-mk.df$assymetry <- ifelse(Zscore(As[hc],As)<=-1.5,1,0)
+mk.df$assymetry <- ifelse(abs(Zscore(As[hc],As))>=1.5,1,0)
 
 # Hippocampal sclerosis is defines as either atrophy or asymmetry
 mk.df$hs <- as.numeric(mk.df$hip.atrophy |  mk.df$assymetry)
@@ -402,7 +402,7 @@ mk.ses1$duration <- ifelse(mk.ses1$duration==0,NA, mk.ses1$duration)
 tle <- which(mk.ses1$group == "Patient")
 
 # Z-score based in controls
-col.zscore <- c("EpiTrack", "Episodic", "Semantic", "Spatial", "hip.ipsi", "hip.cntr")
+col.zscore <- c("EpiTrack", "Episodic", "Semantic", "Spatial")
 mk.ses1[,col.zscore] <- apply(mk.ses1[,col.zscore], 2, function(x) Zscore(x[hc],x) )
 
 # Colors as Longitudinal subjects
@@ -596,7 +596,7 @@ emtrends_result <- emtrends(mem, pairwise ~ group, var = "mk6240.Tdiff.yrs")
 print(emtrends_result$emtrends)
 ```
 
-No significant interaction (`mk6240.Tdiff.yrs:groupHealthy`, p = 0.766) was found, suggesting that the rate of change in `mk6240.sig` over time is not significantly different between the Healthy and Patient groups.
+No significant interaction (`mk6240.Tdiff.yrs:groupHealthy`, p = 0.769) was found, suggesting that the rate of change in `mk6240.sig` over time is not significantly different between the Healthy and Patient groups.
 
 -   **Healthy Group**: The estimated slope is `-0.0026` per year (95% CI: -0.034 to 0.0287). This suggests a slight decrease in `mk6240.sig` over time, but the change is small and not statistically significant.
 
@@ -852,7 +852,7 @@ write.csv(supplementary_clinical_table, "/Users/rcruces/Desktop/OSF_data_revisio
 ### MK-6240, behavioral and graph metrics correlogram
 ```{r all_corr, fig.width=10, fig.height=10, warning=FALSE, echo=FALSE, message=FALSE}
 # Variables to correlate
-vars <- c("mk6240.sig","EpiTrack", "Episodic", "Semantic", "hip.ipsi", "hip.cntr",
+vars <- c("mk6240.sig","EpiTrack", "Episodic", "Semantic",
           "fc.neighbors", "fc.strength", "fc.clustecoef", "fc.efficiency", "fc.pathlengh",  
           "sc.neighbors", "sc.strength", "sc.clustecoef", "sc.efficiency", "sc.pathlengh")
 
