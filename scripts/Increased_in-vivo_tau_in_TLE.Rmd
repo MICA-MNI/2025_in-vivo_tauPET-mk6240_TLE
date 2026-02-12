@@ -86,36 +86,35 @@ In summary this gives the following equation to calculate SUV at time $t$ post i
 | `age`                           | Participant’s age at the time of PET scan.                                  |
 | `age.mri1`                      | Participant’s age at the time of the first MRI scan.                        |
 | `handedness`                    | Hand preference (Right, Left, Ambidextrous).                                |
-| `Language`                      | Primary language spoken by the participant.                                 |
+| `language`                      | Primary language spoken by the participant.                                 |
 | `group`                         | Diagnostic group (Healthy, Patient).                                        |
-| `mCi.net`                       | Net injected dose of 18F-MK6240 radiotracer (in mCi).                       |
 | `mk6240.mean`                   | Whole-brain mean SUVR of 18F-MK6240.                                        |
 | `epilepsy.class`                | Epilepsy classification (clinical subtype).                                 |
-| `lateralization`                | Laterality of the seizure onset in TLE (R, L).                              |
 | `origin`                        | Epilepsy etiology (e.g., mTLE, TLE, unclear).                               |
+| `lateralization`                | Laterality of the seizure onset in TLE (R, L).                              |
+| `hs`                            | Presence of hippocampal sclerosis (assymetry or atrophy)                    |
 | `dre`                           | Drug-resistant epilepsy status (Yes/No).                                    |
-| `asm.number`                    | Number of anti-seizure medications taken.                                   |
-| `asm.names`                     | Names of anti-seizure medications taken.                                    |
 | `onset`                         | Age at epilepsy onset.                                                      |
 | `duration`                      | Duration of epilepsy (years).                                               |
-| `sx.number`                     | Number of surgeries (if any)                                                |
-| `engel`                         | Engel post-operative seizure freedom classification.                        |
-| `ilae.class`                    | ILAE surgical outcome classification.                                       |
-| `moca.Total.Score`              | Global cognitive score from the MoCA test.                                  |
-| `EpiTrack                    `  | Age-corrected composite score from the EpiTrack cognitive battery.          |
-| `Episodic`                      | Percent accuracy in delayed recall trials.                                  |
-| `Epi.Acc.E.per`                 | Percent accuracy in encoding trials.                                        |
-| `Semantic`                      | Accuracy in the semantic decision task.                                     |
-| `task.spatial`                  | Accuracy in the spatial memory task.                                        |
-| `hip.ipsi`                      | Ipsilateral hippocampal volume (mm³ volume).                                |
 | `IEDs`                          | Interictal epileptiform discharge frequency from EMU or LTMO.               |
 | `GTCSF`                         | generalized tonic-clonic seizures frequency per year.                       |
-| `mk6240.sig.ipsi`               | Mean 18F-MK6240 SUVR in ipsilateral significant cortical clusters.          |
-| `mk6240.sig.contra`             | Mean 18F-MK6240 SUVR in contralateral significant cortical clusters.        |
+| `asm.number`                    | Number of anti-seizure medications taken.                                   |
+| `sx.number`                     | Number of surgeries (if any)                                                |
+| `engel`                         | Engel post-operative seizure freedom classification.                        |
+| `EpiTrack`                      | Age-corrected composite score from the EpiTrack cognitive battery.          |
+| `Episodic`                      | Percent accuracy in delayed recall trials.                                  |
+| `Semantic`                      | Accuracy in the semantic decision task.                                     |
+| `hip.ipsi`                      | Ipsilateral hippocampal volume (z-score).                                   |
+| `hip.cntr`                      | Contralateral hippocampal volume (z-score).                                 |
 | `suvr.ipsi.?`                   | Mean 18F-MK6240 SUVR in ipsilateral subcortical ROIs.                       |
 | `suvr.cntr.?`                   | Mean 18F-MK6240 SUVR in contralateral subcortical ROIs.                     |
-
-
+| `?c.strength`                   | Mean node strength of the FC/SC network.                                    |
+| `?c.clustecoef`                 | Average clustering coefficient of the FC/SC network.                        |
+| `?c.efficiency`                 | Global efficiency of the FC/SC network.                                     |
+| `?c.pathlengh`                  | Characteristic path length of the FC/SC network.                            |
+| `?c.neighbors`                  | Average number of neighbors (node degree) in the FC/SC network.             |
+| `mk6240.sig.ipsi`               | Mean 18F-MK6240 SUVR in ipsilateral significant cortical clusters.          |
+| `mk6240.sig.contra`             | Mean 18F-MK6240 SUVR in contralateral significant cortical clusters.        |
 
 ### Setup the environment
 
@@ -129,7 +128,7 @@ library("dplyr") # %>%
 library("gtsummary") # Tables reports
 library("kableExtra") # tables formatting 
 library("scales") # alpha
-library("ggplot2") # lollipop
+library("ggplot2") # lollipops
 library("lme4") # mixed-effects models
 library("lmerTest") # mixed-effects models
 library("pander") # table format
@@ -148,26 +147,21 @@ library("semPlot") #sempath plot
 ### Get the data from the OSF repository
 
 ```{r data, echo=FALSE, message=FALSE, warning=FALSE}
-# # create a temporary directory
-# tmpdir= tempdir()
-# 
-# # Download the csv database
-# osf_file <- osf_retrieve_node("ct3gw") %>%
-#   osf_ls_files %>%
-#   filter(name == "18F-MK6240_in-vivo_database.csv") %>%
-#   osf_download(path = tmpdir,conflicts = "overwritte")
-# 
-# # Load the csv database
-# mk.df <- read.csv(osf_file$local_path)
-# 
-# # Remove the tom variables
-# rm(osf_file, tmpdir)
-mk.df <- read.csv("/Users/rcruces/Desktop/OSF_data_revision-2025/18F-MK6240_database.csv")
+# create a temporary directory
+tmpdir= tempdir()
 
-names(mk.df)[names(mk.df) == "EpiTrack.Score.age.corrected"] <- "EpiTrack"
-names(mk.df)[names(mk.df) == "Epi.Acc.D.per"] <- "Episodic"
-names(mk.df)[names(mk.df) == "task.semantic"] <- "Semantic"
-names(mk.df)[names(mk.df) == "task.spatial"] <- "Spatial"
+# Download the csv database
+osf_file <- osf_retrieve_node("ct3gw") %>%
+  osf_ls_files %>%
+  filter(name == "18F-MK6240_in-vivo_database.csv") %>%
+  osf_download(path = tmpdir,conflicts = "overwritte")
+
+# Load the csv database
+mk.df <- read.csv(osf_file$local_path)
+
+# Remove the tom variables
+rm(osf_file, tmpdir)
+# mk.df <- read.csv("/Users/rcruces/Desktop/OSF_data_revision-2025/18F-MK6240_database.csv")
 
 ```
 
@@ -181,15 +175,14 @@ mk.df$group <- factor(mk.df$group, levels = c("Patient", "Healthy"))
 
 mk.df %>%
   dplyr::select(
-    group, age, mk6240.mean, mk6240.sig, mk6240.mean.ipsi, mk6240.mean.contra, mk6240.sig.ipsi, mk6240.sig.contra, mCi.net, mk6240.Tdiff,mk6240.mri.Tdiff,
-    EpiTrack, Episodic,
-    Semantic, Spatial, hip.ipsi, hip.cntr
+    group, age, mk6240.mean, mk6240.sig, mk6240.mean.ipsi, mk6240.mean.contra, mk6240.sig.ipsi, mk6240.sig.contra, mk6240.Tdiff,mk6240.mri.Tdiff,
+    EpiTrack, Episodic, Semantic,  
+    hip.ipsi, hip.cntr
   ) %>%
   tbl_summary(
     by = group,
     missing = "no",
-    statistic = list(all_continuous() ~ "{mean}±{sd}"),
-    type = list(mCi.net ~ "continuous")
+    statistic = list(all_continuous() ~ "{mean}±{sd}")
   ) %>%                                   # <<< closed tbl_summary() properly
   modify_header(label = "**Demographics**") %>%
   add_p(test = all_continuous() ~ "t.test") %>%
@@ -211,7 +204,7 @@ mk.df %>%
 
 ```{r sex.table, echo=FALSE, message=FALSE, warning=FALSE}
 mk.df %>%
-  dplyr::select(group, mk6240.session, sex, handedness, age, mk6240.Tdiff, mCi.net) %>%
+  dplyr::select(group, mk6240.session, sex, handedness, age, mk6240.Tdiff) %>%
   tbl_strata(
     strata = group,
     .tbl_fun = ~ .x %>%
@@ -227,34 +220,10 @@ mk.df %>%
 ## Clinical characteristics of patients
 
 ```{r table3, echo=FALSE, message=FALSE, warning=FALSE}
-
-# Boolean with the healthy controls
-hc <- which(mk.df$group == "Healthy")
-
-#### Z-scores two vectors based on the first  ####
-Zscore <- function(vec1,vec2) {
-  vec1 <- as.vector(vec1)
-  vec2 <- as.vector(vec2)
-  mu <- mean(vec1, na.rm=TRUE)
-  s <- sd(vec1, na.rm=TRUE)
-  Zvec <- (vec2 - mu)/s
-  return(Zvec)
-}
-
-# Create hippocampal atrophy vector (Normalized z-scored volume LESS than 2 std of controls)
-mk.df$hip.atrophy <- ifelse(mk.df$hip.ipsi<=-1.5,1,0)
-
-# Asymmetry z-score
-As <- (mk.df$hip.ipsi - mk.df$hip.cntr) / (mk.df$hip.ipsi + mk.df$hip.cntr)
-mk.df$assymetry <- ifelse(abs(Zscore(As[hc],As))>=1.5,1,0)
-
-# Hippocampal sclerosis is defines as either atrophy or asymmetry
-mk.df$hs <- as.numeric(mk.df$hip.atrophy |  mk.df$assymetry)
-
 # Mean and Std
 mk.df %>%
   subset(group=="Patient") %>% 
-  dplyr::select(mk6240.session, duration, onset, origin, lateralization, hip.atrophy, assymetry, hs) %>%
+  dplyr::select(mk6240.session, duration, onset, origin, lateralization, hs) %>%
   tbl_summary(by=mk6240.session, missing = "no",
               statistic = list(all_continuous() ~ "{mean}±{sd}"),
               type = list(duration ~ "continuous"),
@@ -275,12 +244,6 @@ mk.df %>%
 
 ### Group differences in graph metrics
 ```{r gta.table, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
-
-mk.df$sc.pathlengh <- mk.df$sc.pathlengh/1e+15
-mk.df$sc.clustecoef <- mk.df$sc.clustecoef*1e5
-mk.df$sc.neighbors <- mk.df$sc.neighbors*1e3
-mk.df$sc.efficiency <-mk.df$sc.efficiency*1e2
-
 mk.df %>%
   dplyr::select(
     group, fc.strength, fc.clustecoef, fc.efficiency, fc.pathlengh, fc.neighbors,
@@ -365,6 +328,17 @@ Scatter plot display of the relationship of mean MK-6240 SUVR with behavioral an
 ```{r figure3a, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
 # Save Figures as Correlation with behavior 1000 x 315 px
 
+# FUNCTION - Z-scores two vectors based on the first  ####
+Zscore <- function(vec1,vec2) {
+  vec1 <- as.vector(vec1)
+  vec2 <- as.vector(vec2)
+  mu <- mean(vec1, na.rm=TRUE)
+  s <- sd(vec1, na.rm=TRUE)
+  Zvec <- (vec2 - mu)/s
+  return(Zvec)
+}
+
+
 # FUNCTION - Plot correlations using ggplot2
 plot_corr_ggplot <- function(mk620, value, Col=NULL, Xlab="Z-score", Ylab="mean SUVR",
                              ln.col="gray65", ci.col="lightgray", Ylim=c(0.75,1.5), sub=NULL, Title=NULL) {
@@ -401,8 +375,11 @@ mk.ses1$duration <- ifelse(mk.ses1$duration==0,NA, mk.ses1$duration)
 # Boolean with the patients
 tle <- which(mk.ses1$group == "Patient")
 
+# Boolean with the healthy controls
+hc <- which(mk.ses1$group == "Healthy")
+
 # Z-score based in controls
-col.zscore <- c("EpiTrack", "Episodic", "Semantic", "Spatial")
+col.zscore <- c("EpiTrack", "Episodic", "Semantic")
 mk.ses1[,col.zscore] <- apply(mk.ses1[,col.zscore], 2, function(x) Zscore(x[hc],x) )
 
 # Colors as Longitudinal subjects
@@ -435,14 +412,14 @@ grid.arrange(grobs = plot_list, ncol = 3, nrow = 1)
 ```
 
 ## Correlation with IEDs and GTCS frequency
-```{r figure3a, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+```{r figure3b, fig.width=7, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
 # Save Figures as Correlation with behavior 1000 x 315 px
 
 # log GTCSF +1
 mk.ses1$GTCSF.log <- log(mk.ses1$GTCSF + 1)
 
 # Variables to correlate
-corr.cli <- c("IEDs", "GTCSF.log", "Spatial")
+corr.cli <- c("IEDs", "GTCSF.log")
 
 # List to store plots
 plot_list <- list()
@@ -461,17 +438,47 @@ for (i in seq_along(corr.cli)) {
 }
 
 # Arrange plots in a grid
-grid.arrange(grobs = plot_list, ncol = 3, nrow = 1)
+grid.arrange(grobs = plot_list, ncol = 2, nrow = 1)
 ```
 
 
 ## Figure.3B \| Tau MK-6240 SUVR and behavioural relationships
 
-```{r figure3b, fig.width=7, fig.height=6, warning=FALSE, echo=FALSE, message=FALSE}
+```{r figure3c, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
 # Save Figures as Correlation with behavior 1000 x 315 px
 
 # Variables to correlate
-corr.cli <- c("EpiTrack", "Episodic", "Semantic", "Spatial")
+corr.cli <- c("EpiTrack", "Episodic", "Semantic")
+
+# List to store plots
+plot_list <- list()
+
+# Set the variable to correlate with clinical
+for (i in seq_along(corr.cli)) {
+  var_name <- corr.cli[i]
+  for (j in c("mk6240.sig")) {
+    mk.val <- mk.ses1[, j]
+    
+    # Plot data
+    x <- mk.ses1[, var_name]
+    p <- plot_corr_ggplot(mk.val, x, Xlab = "z-score", Ylab = "SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
+    plot_list <- c(plot_list, list(p))
+  }
+}
+
+# Arrange plots in a grid
+grid.arrange(grobs = plot_list, ncol = 3, nrow = 1)
+
+```
+
+## Figure.3C \| Tau MK-6240 SUVR and hippocampal volume
+
+```{r figure3d, fig.width=7, fig.height=6, warning=FALSE, echo=FALSE, message=FALSE}
+# Save Figures as Correlation with behavior 1000 x 315 px
+
+# Variables to correlate
+corr.cli <- c("hip.ipsi", "hip.cntr",
+              "suvr.ipsi.hippocampus", "suvr.cntr.hippocampus")
 
 # List to store plots
 plot_list <- list()
@@ -491,35 +498,6 @@ for (i in seq_along(corr.cli)) {
 
 # Arrange plots in a grid
 grid.arrange(grobs = plot_list, ncol = 2, nrow = 2)
-
-```
-
-## Figure.3C \| Tau MK-6240 SUVR and hippocampal volume
-
-```{r figure3c, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
-# Save Figures as Correlation with behavior 1000 x 315 px
-
-# Variables to correlate
-corr.cli <- c("hip.ipsi", "hip.cntr","suvr.ipsi.hippocampus")
-
-# List to store plots
-plot_list <- list()
-
-# Set the variable to correlate with clinical
-for (i in seq_along(corr.cli)) {
-  var_name <- corr.cli[i]
-  for (j in c("mk6240.sig")) {
-    mk.val <- mk.ses1[, j]
-    
-    # Plot data
-    x <- mk.ses1[, var_name]
-    p <- plot_corr_ggplot(mk.val, x, Xlab = "z-score", Ylab = "SUVR", Col = col.group, sub = mk.ses1$participant_id, Title = corr.cli[i], Ylim = c(0.8, 1.8))
-    plot_list <- c(plot_list, list(p))
-  }
-}
-
-# Arrange plots in a grid
-grid.arrange(grobs = plot_list, ncol = 3)
 
 ```
 
@@ -598,9 +576,9 @@ print(emtrends_result$emtrends)
 
 No significant interaction (`mk6240.Tdiff.yrs:groupHealthy`, p = 0.769) was found, suggesting that the rate of change in `mk6240.sig` over time is not significantly different between the Healthy and Patient groups.
 
--   **Healthy Group**: The estimated slope is `-0.0026` per year (95% CI: -0.034 to 0.0287). This suggests a slight decrease in `mk6240.sig` over time, but the change is small and not statistically significant.
+-   **Healthy Group**: The estimated slope is `-0.00438` per year (95% CI: -0.0354 to 0.0266). This suggests a slight decrease in `mk6240.sig` over time, but the change is small and not statistically significant.
 
--   **Patient Group**: The estimated slope is `0.0041` per year (95% CI: -0.0309 to 0.0391), indicating a slight increase in `mk6240.sig` over time, though this change is also not statistically significant.
+-   **Patient Group**: The estimated slope is `0.00606` per year (95% CI: -0.0285 to 0.0407), indicating a slight increase in `mk6240.sig` over time, though this change is also not statistically significant.
 
 There is no strong evidence that `mk6240.sig` changes over time in either the Healthy or Patient groups, nor that the rate of change differs significantly between them. However, the significant main effect of group (p < 0.001) suggests that `mk6240.sig` is, on average, lower in the Healthy group compared to Patients.
 
@@ -780,7 +758,7 @@ corrplot(
 ```{r sub-cli, warning=FALSE, echo=FALSE, message=FALSE, fig.width=8, fig.height=8}
   
 # Variables to correlate
-vars <- c("age", "duration", "onset","EpiTrack", "Episodic", "Semantic","hip.ipsi", "hip.cntr","mCi.net")
+vars <- c("age", "duration", "onset","EpiTrack", "Episodic", "Semantic","hip.ipsi", "hip.cntr")
 
 # Initialize p-value matrix
 sub.rhos <- sub.pvals <- matrix(NA, nrow = length(vars), ncol = length(sctx.str),
@@ -829,21 +807,16 @@ supplementary_clinical_table <- mk.df %>%
   # Rename sx.number to surgery and recode 0=no, 1=yes
   rename(surgery = sx.number) %>%
   mutate(surgery = ifelse(surgery == 0, "no", "yes")) %>%
-  # Replace NA in ilae.class with empty string
-  mutate(ilae.class = ifelse(is.na(ilae.class), "", ilae.class)) %>%
   # Recode hip.atrophy 0=no, 1=yes
   mutate(hs = ifelse(hs == 0, "no", "yes")) %>%
   # Select relevant columns
   select(
-    sex, age, handedness, Language,
+    participant_id, sex, age, handedness, language,
     epilepsy.class, lateralization, origin, onset, duration,
     hs, GTCSF, IEDs, surgery, engel
   )
 
 supplementary_clinical_table
-
-# Save to CSV
-write.csv(supplementary_clinical_table, "/Users/rcruces/Desktop/OSF_data_revision-2025/supplementary_clinical_table.csv", row.names = FALSE)
 
 ```
 
@@ -954,6 +927,8 @@ lavaanPlot(model = fit,
 
 ### Full SEM model with multiple mediators and outcomes
 
+> Note: for rendering purposes the number of booststraps was set to 1000, but the final version was run with 10000 for a stable estimates of the indirect effects.
+
 ```{r sem_full, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
 # https://mspeekenbrink.github.io/sdam-r-companion/structural-equation-modelling-with-lavaan.html
 
@@ -1003,7 +978,7 @@ model <- '
   total_Semantic := c3 + ind_Semantic_total
 '
 
-fit.full <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 10000)
+fit.full <- sem(model, data = mk.ses1, se = "bootstrap", bootstrap = 1000)
 summary(fit.full, standardized = TRUE, fit.measures = TRUE)
 
 lavaanPlot(model = fit.full,
@@ -1013,7 +988,8 @@ lavaanPlot(model = fit.full,
 
 ```
 
-### Full SEM model with multiple mediators and outcomes and hippocampus
+### Full SEM model with multiple mediators and outcomes and ipsilateralhippocampal volume
+
 ```{r sem_full+hip, fig.width=10, fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
 # https://mspeekenbrink.github.io/sdam-r-companion/structural-equation-modelling-with-lavaan.html
 
